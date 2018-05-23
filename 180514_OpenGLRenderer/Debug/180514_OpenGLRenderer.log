@@ -1,0 +1,15 @@
+﻿  Gizmos.cpp
+  main.cpp
+  Generating Code...
+  gl_core_4_4.c
+main.obj : error LNK2019: unresolved external symbol _glfwInit referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwTerminate referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwCreateWindow referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwDestroyWindow referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwWindowShouldClose referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwPollEvents referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwGetKey referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwMakeContextCurrent referenced in function _main
+main.obj : error LNK2019: unresolved external symbol _glfwSwapBuffers referenced in function _main
+C:\Users\s171671\Documents\Visual Studio Projects\180514_OpenGLRenderer\LIB\GLFW\glfw3.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'x86'
+C:\Users\s171671\Documents\Visual Studio Projects\180514_OpenGLRenderer\Debug\180514_OpenGLRenderer.exe : fatal error LNK1120: 9 unresolved externals
