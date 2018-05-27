@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D455783D-D335-4F9F-A50E-BBDE62CA2314}</ProjectGuid>
     <RootNamespace>My180514OpenGLRenderer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -99,7 +99,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -111,7 +112,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -125,7 +127,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -141,7 +143,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -150,26 +152,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SRC\Gizmos.cpp" />
-    <ClCompile Include="SRC\gl_core_4_4.c" />
-    <ClCompile Include="SRC\InputMonitor.cpp" />
+    <ClCompile Include="SRC\Rendering\Gizmos.cpp" />
+    <ClCompile Include="SRC\Rendering\gl_core_4_4.c" />
+    <ClCompile Include="SRC\Application\InputMonitor.cpp" />
     <ClCompile Include="SRC\main2.cpp" />
     <ClCompile Include="SRC\main.cpp" />
-    <ClCompile Include="SRC\Program.cpp" />
-    <ClCompile Include="SRC\RenderCamera.cpp" />
-    <ClCompile Include="SRC\RendererProgram.cpp" />
-    <ClCompile Include="SRC\Transform.cpp" />
+    <ClCompile Include="SRC\Rendering\Mesh.cpp" />
+    <ClCompile Include="SRC\Application\Program.cpp" />
+    <ClCompile Include="SRC\Application\RenderCamera.cpp" />
+    <ClCompile Include="SRC\Application\RendererProgram.cpp" />
+    <ClCompile Include="SRC\Rendering\Material.cpp" />
+    <ClCompile Include="SRC\Utility\Transform.cpp" />
+    <ClCompile Include="SRC\Rendering\VertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\gl_core_4_4.h" />
-    <ClInclude Include="INC\InputMonitor.h" />
-    <ClInclude Include="INC\Program.h" />
-    <ClInclude Include="INC\RenderCamera.h" />
-    <ClInclude Include="INC\RendererProgram.h" />
-    <ClInclude Include="INC\Renderer_Utility_Literals.h" />
-    <ClInclude Include="INC\Transform.h" />
+    <ClInclude Include="INC\Rendering\gl_core_4_4.h" />
+    <ClInclude Include="INC\Application\InputMonitor.h" />
+    <ClInclude Include="INC\Rendering\Mesh.h" />
+    <ClInclude Include="INC\Application\Program.h" />
+    <ClInclude Include="INC\Application\RenderCamera.h" />
+    <ClInclude Include="INC\Application\RendererProgram.h" />
+    <ClInclude Include="INC\Utility\Renderer_Utility_Funcs.h" />
+    <ClInclude Include="INC\Utility\Renderer_Utility_Literals.h" />
+    <ClInclude Include="INC\Rendering\Material.h" />
+    <ClInclude Include="INC\Utility\Transform.h" />
+    <ClInclude Include="INC\Rendering\VertexFormat.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BUILD\shaders\base.frag" />
     <None Include="BUILD\shaders\base.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

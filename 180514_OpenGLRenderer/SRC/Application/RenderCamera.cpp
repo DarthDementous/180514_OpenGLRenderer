@@ -1,4 +1,4 @@
-#include "..\INC\RenderCamera.h"
+#include "RenderCamera.h"
 #include "Transform.h"
 #include "InputMonitor.h"
 

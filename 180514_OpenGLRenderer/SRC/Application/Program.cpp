@@ -1,5 +1,6 @@
 #include "Program.h"
 #include "Renderer_Utility_Literals.h"
+#include "Renderer_Utility_Funcs.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -35,6 +36,11 @@ int Program::Run()
 		return EXIT_FAILURE;
 	}
 
+#ifdef DEBUG
+	// Send debug output context to window for easier debugging
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
+
 	/// Launch window
 	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL Renderer", nullptr, nullptr);
 
@@ -52,8 +58,20 @@ int Program::Run()
 		return OPENGL_LOAD_FAIL;
 	}
 
+#ifdef DEBUG
+	// Enable openGL debug context if allowed
+	int flag; glGetIntegerv(GL_CONTEXT_FLAGS, &flag);
+	if (flag & GL_CONTEXT_FLAG_DEBUG_BIT) {		// Debug context is supported
+
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);	// Run callback function the instant an error occurs
+		glDebugMessageCallback(RendererUtility::glDebugOutputCallback, nullptr);	// Set callback function
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	}
+#endif
+
 	/// Rendering initialisation
-	glClearColor(0.25f, 0.25f, 0.25f, 1);
+	glClearColor(0.2f, 0.2f, 0.25f, 1);
 	glEnable(GL_DEPTH_TEST);
 
 	Startup();

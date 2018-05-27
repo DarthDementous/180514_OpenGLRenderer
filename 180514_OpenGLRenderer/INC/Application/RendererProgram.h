@@ -5,6 +5,7 @@
 
 class RenderCamera;
 class Transform;
+class Mesh;
 
 class RendererProgram : public Program {
 public:
@@ -23,4 +24,7 @@ private:
 	RenderCamera* mainCamera;
 
 	Transform* sphereTransform;
+
+	Mesh* triMesh;
+	Mesh* rhombusMesh;
 };

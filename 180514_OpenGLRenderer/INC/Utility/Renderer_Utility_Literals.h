@@ -5,3 +5,8 @@ enum eProgramError {
 	WINDOW_CREATE_FAIL,
 	OPENGL_LOAD_FAIL,
 };
+
+enum eShaderType {
+	FRAG_SHADER,
+	VERT_SHADER
+};

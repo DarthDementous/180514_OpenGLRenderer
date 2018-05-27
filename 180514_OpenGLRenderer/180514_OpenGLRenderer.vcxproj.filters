@@ -15,58 +15,80 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SRC\Gizmos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\gl_core_4_4.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\Program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SRC\main2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\RendererProgram.cpp">
+    <ClCompile Include="SRC\Application\InputMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\RenderCamera.cpp">
+    <ClCompile Include="SRC\Application\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Transform.cpp">
+    <ClCompile Include="SRC\Rendering\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\InputMonitor.cpp">
+    <ClCompile Include="SRC\Application\RenderCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Application\RendererProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\VertexFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Utility\Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\gl_core_4_4.h">
+    <ClInclude Include="INC\Rendering\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Program.h">
+    <ClInclude Include="INC\Rendering\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\RendererProgram.h">
+    <ClInclude Include="INC\Rendering\VertexFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\RenderCamera.h">
+    <ClInclude Include="INC\Application\Program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Transform.h">
+    <ClInclude Include="INC\Application\InputMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\InputMonitor.h">
+    <ClInclude Include="INC\Application\RenderCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Renderer_Utility_Literals.h">
+    <ClInclude Include="INC\Rendering\gl_core_4_4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Utility\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Utility\Renderer_Utility_Literals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Utility\Renderer_Utility_Funcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Application\RendererProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BUILD\shaders\base.vert" />
+    <None Include="BUILD\shaders\base.frag" />
   </ItemGroup>
 </Project>

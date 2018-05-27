@@ -1,4 +1,4 @@
-#include "..\INC\Transform.h"
+#include "Transform.h"
 #include <glm/ext.hpp>
 
 Transform::Transform(const glm::vec3& a_pos, const glm::vec3& a_scale, const glm::vec3& a_rot) : m_position(a_pos), m_scale(a_scale), m_rotation(a_rot)
