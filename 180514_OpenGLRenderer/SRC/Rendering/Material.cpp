@@ -67,3 +67,27 @@ void Material::LinkShaders()
 
 	m_shaderIDs.clear();
 }
+
+/**
+*	@brief Attempt to find uniform variable linked to shader program and set to given value.
+*	@param a_name is the name of the uniform variable.
+*	@param a_val is the value to apply to the found uniform variable.
+*	@return void.
+*/
+void Material::SetBool(const char * a_name, bool a_val)
+{
+	int foundKernel = glGetUniformLocation(*this, a_name);			// Returns int in case it can't find location (-1)
+	glUniform1i(foundKernel, int(a_val));							
+}
+
+void Material::SetInt(const char * a_name, int a_val)
+{
+	int foundKernel = glGetUniformLocation(*this, a_name);			
+	glUniform1i(foundKernel, a_val);								
+}
+
+void Material::SetFloat(const char * a_name, float a_val)
+{
+	int foundKernel = glGetUniformLocation(*this, a_name);
+	glUniform1f(foundKernel, a_val);
+}

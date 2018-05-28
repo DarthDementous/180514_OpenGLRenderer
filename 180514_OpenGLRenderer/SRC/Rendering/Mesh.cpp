@@ -4,7 +4,7 @@
 
 #include <gl_core_4_4.h>
 
-Mesh::Mesh(std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format)
+Mesh::Mesh(const std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format)
 {
 	m_rawVerticeData	= a_verts;		// Copy temporary contents into permanent class variable
 	m_material			= a_mat;
@@ -17,8 +17,13 @@ Mesh::Mesh(std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_rawVerticeData.size(), &m_rawVerticeData[0], GL_STATIC_DRAW);
 
 	/// Pre-defined memory layout attributes
+	// NOTE: Stride is based on the overall size of the vertex, e.g. stride of 32 for a vertex containing 8 floats.
+
 	// Position
-	m_vertFormat->AddAttribute(*this, 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+	m_vertFormat->AddAttribute(*this, 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), NULL);
+
+	// Color
+	m_vertFormat->AddAttribute(*this, 1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));		// Offset to start in front of position
 }
 
 Mesh::~Mesh()
@@ -26,6 +31,11 @@ Mesh::~Mesh()
 	/// NOTE: Only delete things unique to the mesh, not things that can be shared like materials and formats
 	// Delete vertex buffer
 	glDeleteBuffers(1, &m_vertBufferID);
+}
+
+unsigned int Mesh::GetProgram()
+{
+	return *m_material;
 }
 
 void Mesh::Draw()

@@ -28,9 +28,14 @@ protected:
 private:
 	void ReconstructMatrix();
 
+	// Cached values (avoids decomposition)
 	glm::vec3 m_position;
 	glm::vec3 m_scale;
 	glm::vec3 m_rotation;
 
-	glm::mat4 m_transformMatrix;
+	glm::vec3 m_forward;
+	glm::vec3 m_up;
+	glm::vec3 m_left;
+
+	glm::mat4 m_transformMatrix;		// Final constructed matrix with position, rotation and scale information
 };

@@ -11,6 +11,8 @@ public:
 
 	void Update(float a_dt);
 	void SetProjection(float a_fov, float a_aspectRatio, float a_near, float a_far);
+	void SetYaw(float a_yaw);
+	void SetPitch(float a_pitch);
 
 	glm::mat4 CalculateProjectionView();
 

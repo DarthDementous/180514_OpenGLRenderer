@@ -34,7 +34,7 @@ int RendererProgram::Startup()
 	viewMatrix = glm::lookAt(glm::vec3(-10, 10, -10), glm::vec3(0), glm::vec3(0, 1, 0));			// Create view matrix looking at at an arbitrary point
 	projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);			// Define how objects should be drawn
 
-	sphereTransform = new Transform(glm::vec3(0, 2, 8));
+	sphereTransform = new Transform(glm::vec3(0, 2, 8), glm::vec3(3, 3, 3), glm::vec3(glm::radians(90.f), 0, 0));
 
 	mainCamera = new RenderCamera();
 	mainCamera->SetProjection(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
@@ -51,6 +51,12 @@ int RendererProgram::Startup()
 		  
 	baseMat->LinkShaders();
 
+	//// Color input
+	//glUseProgram(*baseMat);							
+
+	//int colorKernel = glGetUniformLocation(*baseMat, "a_color");		// Returns int in case it can't find location (-1)
+	//glUniform4f(colorKernel, 0.75f, 0.f, 0.f, 1.f);						// Applies to current bound shader program
+
 	/// Mesh initialisation
 	// Vertex formats
 	VertexFormat* triFormat = new VertexFormat(std::vector<unsigned int>{
@@ -59,23 +65,25 @@ int RendererProgram::Startup()
 	});
 
 	VertexFormat* rhombusFormat = new VertexFormat(std::vector<unsigned int>{
-		0, 1, 2, 3, 0
+		0, 1, 3,		// First triangle
+		1, 2, 3			// Second triangle
 	});
 
 	// Meshes
 	triMesh = new Mesh( std::vector<float>{
 		/// Square
-		-0.5f, 0.5f, 0.0f,		// Top left	
-		0.5f, 0.5f, 0.0f,		// Top right
-		-0.5f, -0.5f, 0.0f,		// Bottom left
-		0.5f, -0.5f, 0.0f		// Bottom right
+		// Positions				// Colors
+		-0.5f, 0.5f, 0.0f, 1.f,		1.f, 0.f, 0.f, 1.f,		// Top left	
+		0.5f, 0.5f, 0.0f, 1.f,		0.f, 1.f, 0.f, 1.f,		// Top right
+		-0.5f, -0.5f, 0.0f,	1.f,	0.f, 0.f, 1.f, 1.f,		// Bottom left
+		0.5f, -0.5f, 0.0f, 1.f,		1.f, 1.f, 0.f, 1.f		// Bottom right
 	}, baseMat, triFormat);
 
 	rhombusMesh = new Mesh(std::vector<float>{
-		-0.5f, -0.9f, 0.f,
-		0.25f, -0.75f, 0.f,
-		0.f, -0.75f, 0.f,
-		0.5f, -0.9f, 0.f
+		-0.5f, -0.9f, 0.f, 1.f,		0.5f, 0.f, 0.f, 1.f,
+		-0.25f, -0.65f, 0.f, 1.f,	0.5f, 0.f, 0.f, 1.f,
+		0.25f, -0.65f, 0.f,	1.f,	0.5f, 0.f, 0.f, 1.f,
+		0.5f, -0.9f, 0.f, 1.f,		0.5f, 0.f, 0.f, 1.f,
 	}, baseMat, rhombusFormat);
 
 #else	  // Un-wrapped 'pure' OpenGL
@@ -224,18 +232,20 @@ void RendererProgram::Update(float a_dt)
 void RendererProgram::Render()
 {
 	//aie::Gizmos::draw(projectionMatrix * viewMatrix);
-	//aie::Gizmos::draw(mainCamera->CalculateProjectionView());
+	aie::Gizmos::draw(mainCamera->CalculateProjectionView());
 
-#if true	// Wrapped draw method
-	triMesh->Draw();
-	rhombusMesh->Draw();
-
-#else		// Un-wrapped draw method
-	// Draw OpenGL triangle
-	#if false	/// Array-order method
-		glDrawArrays(GL_TRIANGLES, 0, 6);		// Renderer shape hint, starting index of vertex array, number of elements in vertex array to process
-	#else		/// Element-order method
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// Renderer shape hint, number of vertices to draw, offset in indice buffer
+#if true		// OPENGL
+	#if true	// Wrapped draw method
+		triMesh->Draw();
+		rhombusMesh->Draw();
+	
+	#else		// Un-wrapped draw method
+		// Draw OpenGL triangle
+		#if false	/// Array-order method
+			glDrawArrays(GL_TRIANGLES, 0, 6);		// Renderer shape hint, starting index of vertex array, number of elements in vertex array to process
+		#else		/// Element-order method
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// Renderer shape hint, number of vertices to draw, offset in indice buffer
+		#endif
 	#endif
 #endif
 }

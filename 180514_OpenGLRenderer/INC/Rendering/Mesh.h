@@ -7,8 +7,10 @@ class Material;
 
 class Mesh {
 public:
-	Mesh(std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format);
+	Mesh(const std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format);
 	~Mesh();
+
+	unsigned int GetProgram();
 
 	operator unsigned int() { return m_vertBufferID; }
 

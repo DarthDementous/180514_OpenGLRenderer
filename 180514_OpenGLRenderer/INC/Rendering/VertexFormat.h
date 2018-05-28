@@ -5,7 +5,7 @@
 class VertexFormat {
 public:
 	VertexFormat();
-	VertexFormat(std::vector<unsigned int>& a_indices);
+	VertexFormat(const std::vector<unsigned int>& a_indices);
 	~VertexFormat();
 
 	void AddAttribute(unsigned int a_vertBufferID, unsigned int a_attributeLocation, unsigned int a_elementNum, unsigned int a_elementType, bool a_isNormalised, int a_stride, const void* a_offset);

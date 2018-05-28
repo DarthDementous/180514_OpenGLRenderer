@@ -60,6 +60,7 @@ void RenderCamera::Update(float a_dt)
 	m_currentPitch = glm::clamp(m_currentPitch, -70.f, 70.f);
 
 	m_cameraTransform->SetRotation(glm::vec3(glm::radians(m_currentPitch), glm::radians(-m_currentYaw), 0));
+
 }
 
 void RenderCamera::SetProjection(float a_fov, float a_aspectRatio, float a_near, float a_far)

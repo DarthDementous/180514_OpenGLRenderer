@@ -6,7 +6,7 @@ VertexFormat::VertexFormat()
 {
 }
 
-VertexFormat::VertexFormat(std::vector<unsigned int>& a_indices)
+VertexFormat::VertexFormat(const std::vector<unsigned int>& a_indices)
 {
 	m_indiceData = a_indices;
 
