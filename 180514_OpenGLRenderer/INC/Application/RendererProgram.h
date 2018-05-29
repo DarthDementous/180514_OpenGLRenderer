@@ -6,6 +6,7 @@
 class RenderCamera;
 class Transform;
 class Mesh;
+class TextureWrapper;
 
 class RendererProgram : public Program {
 public:
@@ -25,6 +26,9 @@ private:
 
 	Transform* sphereTransform;
 
-	Mesh* triMesh;
+	Mesh* rectMesh;
 	Mesh* rhombusMesh;
+
+	TextureWrapper* wallTex;
+	TextureWrapper* faceTex;
 };

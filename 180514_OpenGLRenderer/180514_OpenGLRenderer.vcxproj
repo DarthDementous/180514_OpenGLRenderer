@@ -162,10 +162,12 @@
     <ClCompile Include="SRC\Application\RenderCamera.cpp" />
     <ClCompile Include="SRC\Application\RendererProgram.cpp" />
     <ClCompile Include="SRC\Rendering\Material.cpp" />
+    <ClCompile Include="SRC\Rendering\TextureWrapper.cpp" />
     <ClCompile Include="SRC\Utility\Transform.cpp" />
     <ClCompile Include="SRC\Rendering\VertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="INC\Rendering\TextureWrapper.h" />
     <ClInclude Include="INC\Rendering\gl_core_4_4.h" />
     <ClInclude Include="INC\Application\InputMonitor.h" />
     <ClInclude Include="INC\Rendering\Mesh.h" />

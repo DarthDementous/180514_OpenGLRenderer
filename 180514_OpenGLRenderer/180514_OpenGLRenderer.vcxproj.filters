@@ -51,6 +51,9 @@
     <ClCompile Include="SRC\Rendering\Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SRC\Rendering\TextureWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INC\Rendering\Material.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INC\Application\RendererProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Rendering\TextureWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,7 @@ public:
 	Mesh(const std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_format);
 	~Mesh();
 
-	unsigned int GetProgram();
+	Material* GetMaterial();
 
 	operator unsigned int() { return m_vertBufferID; }
 

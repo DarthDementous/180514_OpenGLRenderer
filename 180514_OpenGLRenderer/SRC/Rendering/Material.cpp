@@ -1,6 +1,7 @@
 #include "Material.h"
 #include "Renderer_Utility_Literals.h"
 #include "Renderer_Utility_Funcs.h"
+#include "TextureWrapper.h"
 
 #include <gl_core_4_4.h>
 
@@ -76,18 +77,55 @@ void Material::LinkShaders()
 */
 void Material::SetBool(const char * a_name, bool a_val)
 {
+	// Bind shader program
+	glUseProgram(*this);
+
 	int foundKernel = glGetUniformLocation(*this, a_name);			// Returns int in case it can't find location (-1)
 	glUniform1i(foundKernel, int(a_val));							
 }
 
 void Material::SetInt(const char * a_name, int a_val)
 {
+	// Bind shader program
+	glUseProgram(*this);
+
 	int foundKernel = glGetUniformLocation(*this, a_name);			
 	glUniform1i(foundKernel, a_val);								
 }
 
 void Material::SetFloat(const char * a_name, float a_val)
 {
+	// Bind shader program
+	glUseProgram(*this);
+
 	int foundKernel = glGetUniformLocation(*this, a_name);
 	glUniform1f(foundKernel, a_val);
 }
+
+void Material::SetVec3(const char * a_name, const glm::vec3 & a_val)
+{
+	// Bind shader program
+	glUseProgram(*this);
+
+	int foundKernel = glGetUniformLocation(*this, a_name);
+	glUniform3f(foundKernel, a_val.x, a_val.y, a_val.z);
+}
+
+void Material::SetVec4(const char * a_name, const glm::vec4 & a_val)
+{
+	// Bind shader program
+	glUseProgram(*this);
+
+	int foundKernel = glGetUniformLocation(*this, a_name);
+	glUniform4f(foundKernel, a_val.x, a_val.y, a_val.z, a_val.w);
+}
+
+void Material::SetTexture(const char * a_name, TextureWrapper * a_tex)
+{
+	glUseProgram(*this);
+
+	// Set specified sampler2D to texture unit
+	SetInt(a_name, a_tex->GetTexUnit());
+}
+
+

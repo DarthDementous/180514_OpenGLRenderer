@@ -20,10 +20,13 @@ Mesh::Mesh(const std::vector<float>& a_verts, Material* a_mat, VertexFormat* a_f
 	// NOTE: Stride is based on the overall size of the vertex, e.g. stride of 32 for a vertex containing 8 floats.
 
 	// Position
-	m_vertFormat->AddAttribute(*this, 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), NULL);
+	m_vertFormat->AddAttribute(*this, 0, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), NULL);
 
 	// Color
-	m_vertFormat->AddAttribute(*this, 1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));		// Offset to start in front of position
+	m_vertFormat->AddAttribute(*this, 1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));		// Offset to start in front of position
+
+	// Texture
+	m_vertFormat->AddAttribute(*this, 2, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
 }
 
 Mesh::~Mesh()
@@ -33,9 +36,9 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &m_vertBufferID);
 }
 
-unsigned int Mesh::GetProgram()
+Material* Mesh::GetMaterial()
 {
-	return *m_material;
+	return m_material;
 }
 
 void Mesh::Draw()

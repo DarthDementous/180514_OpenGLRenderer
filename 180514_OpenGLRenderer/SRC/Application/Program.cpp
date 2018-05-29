@@ -85,7 +85,7 @@ int Program::Run()
 	while (glfwWindowShouldClose(window) == false && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS) {		// Window has not been closed and escape key has not been pressed
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Wipe back buffers and clear distance to pixels to indicate we're rendering a new frame
 
-		glfwPollEvents();			// Record input
+		glfwPollEvents();			// Record input for this frame
 
 		// Calculate time between frames
 		currFrameTime	= glfwGetTime();
@@ -95,7 +95,7 @@ int Program::Run()
 		Update((float)deltaTime);
 
 		Render();
-		glfwSwapBuffers(window);	// Render graphics in window
+		glfwSwapBuffers(window);	// Back buffer has received draw information from Render, swap with front buffer to display new graphics for this frame
 	}
 
 	Shutdown();
