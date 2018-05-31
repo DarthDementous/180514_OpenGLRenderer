@@ -181,8 +181,10 @@
     <ClInclude Include="INC\Rendering\VertexFormat.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BUILD\shaders\base.frag" />
+    <None Include="BUILD\shaders\base_lit.frag" />
     <None Include="BUILD\shaders\base.vert" />
+    <None Include="BUILD\shaders\base_mix.frag" />
+    <None Include="BUILD\shaders\base.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

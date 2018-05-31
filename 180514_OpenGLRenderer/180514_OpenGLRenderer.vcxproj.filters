@@ -95,6 +95,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BUILD\shaders\base.vert" />
+    <None Include="BUILD\shaders\base_mix.frag" />
+    <None Include="BUILD\shaders\base_lit.frag" />
     <None Include="BUILD\shaders\base.frag" />
   </ItemGroup>
 </Project>

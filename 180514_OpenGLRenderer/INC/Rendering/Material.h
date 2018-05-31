@@ -4,6 +4,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 class TextureWrapper;
 
@@ -21,6 +22,7 @@ public:
 	void SetVec3(const char* a_name, const glm::vec3& a_val);
 	void SetVec4(const char* a_name, const glm::vec4& a_val);
 	void SetTexture(const char* a_name, TextureWrapper* a_tex);
+	void SetMat4(const char* a_name, const glm::mat4& a_val);
 
 	operator unsigned int() { return m_ID; }	// Allow class to be used in parameters of openGL functions
 protected:

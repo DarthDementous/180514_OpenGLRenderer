@@ -24,6 +24,19 @@ glm::mat4 RenderCamera::CalculateProjectionView()
 	return m_projectionMatrix * viewMatrix;
 }
 
+glm::mat4 RenderCamera::CalculateView()
+{
+	glm::vec3 target = m_cameraTransform->GetPosition() + m_cameraTransform->Forward();
+	glm::mat4 viewMatrix = glm::lookAt(m_cameraTransform->GetPosition(), target, glm::vec3(0, 1, 0));	// Create view matrix looking in front of the camera according to its transform
+	
+	return viewMatrix;
+}
+
+glm::mat4 RenderCamera::GetProjection()
+{
+	return m_projectionMatrix;
+}
+
 Transform * RenderCamera::GetTransform()
 {
 	return m_cameraTransform;

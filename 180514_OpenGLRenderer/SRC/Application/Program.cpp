@@ -72,7 +72,7 @@ int Program::Run()
 
 	/// Rendering initialisation
 	glClearColor(0.2f, 0.2f, 0.25f, 1);
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);	// Activate the z-buffer to make sure the closest pixels draw in overlap scenarios
 
 	Startup();
 
@@ -83,7 +83,7 @@ int Program::Run()
 
 	/// Main loop
 	while (glfwWindowShouldClose(window) == false && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS) {		// Window has not been closed and escape key has not been pressed
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Wipe back buffers and clear distance to pixels to indicate we're rendering a new frame
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Wipe back buffers and clear z-buffer to indicate we're rendering a new frame
 
 		glfwPollEvents();			// Record input for this frame
 

@@ -2,10 +2,11 @@
 
 #include <Program.h>
 #include <glm/mat4x4.hpp>
+#include <vector>
 
+class Mesh;
 class RenderCamera;
 class Transform;
-class Mesh;
 class TextureWrapper;
 
 class RendererProgram : public Program {
@@ -28,7 +29,10 @@ private:
 
 	Mesh* rectMesh;
 	Mesh* rhombusMesh;
+	Mesh* lightRepMesh;
+	std::vector<Mesh*> cubeMeshes;
 
 	TextureWrapper* wallTex;
 	TextureWrapper* faceTex;
+	TextureWrapper* lightTex;
 };

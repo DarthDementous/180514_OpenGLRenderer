@@ -4,6 +4,7 @@
 #include "TextureWrapper.h"
 
 #include <gl_core_4_4.h>
+#include <glm/ext.hpp>
 
 Material::Material()
 {
@@ -126,6 +127,14 @@ void Material::SetTexture(const char * a_name, TextureWrapper * a_tex)
 
 	// Set specified sampler2D to texture unit
 	SetInt(a_name, a_tex->GetTexUnit());
+}
+
+void Material::SetMat4(const char * a_name, const glm::mat4 & a_val)
+{
+	glUseProgram(*this);
+
+	int foundKernel = glGetUniformLocation(*this, a_name);
+	glUniformMatrix4fv(foundKernel, 1, GL_FALSE, glm::value_ptr(a_val));	// Convert GLM matrix 4 to float pointer to be compatable with openGL
 }
 
 

@@ -40,7 +40,7 @@ int RendererProgram::Startup()
 	sphereTransform = new Transform(glm::vec3(0, 2, 8), glm::vec3(3, 3, 3), glm::vec3(glm::radians(90.f), 0, 0));
 
 	mainCamera = new RenderCamera();
-	mainCamera->SetProjection(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
+	mainCamera->SetProjection(glm::radians(45.f), 16 / 9.f, 0.1f, 1000.f);
 	mainCamera->GetTransform()->SetPosition(glm::vec3(0, 5, -5));
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
 
@@ -55,6 +55,11 @@ int RendererProgram::Startup()
 		wallTex->EnableFiltering();
 		wallTex->EnableMipmapping();
 		wallTex->EnableWrapping();
+
+		lightTex = new TextureWrapper("./textures/light.jpg", 0);
+		lightTex->EnableFiltering();
+		lightTex->EnableMipmapping();
+		lightTex->EnableWrapping();
 	}
 	else {
 		// Load wall texture data into char array
@@ -107,20 +112,33 @@ int RendererProgram::Startup()
 
 	/// Material initialisation
 	if (WRAPPED_OGL_OTHER) {
+		//// Base material
 		Material* baseMat = new Material();
 
 		baseMat->LoadShader("./shaders/base.vert", VERT_SHADER);
-		baseMat->LoadShader("./shaders/base.frag", FRAG_SHADER);
+		baseMat->LoadShader("./shaders/base_lit.frag", FRAG_SHADER);
 
 		baseMat->LinkShaders();
 
 		// Modify material parameters
-		baseMat->SetFloat("xOffset", 0.f);
-		baseMat->SetFloat("yOffset", 0.f);
+		baseMat->SetFloat("ambientCoefficient", 0.1f);
+		baseMat->SetVec4("lightColor", glm::vec4(1));
+		baseMat->SetVec4("lightPos", DEFAULT_LIGHT_POS);
+		
+		baseMat->SetFloat("specularCoefficient", 1.0f);
+		baseMat->SetFloat("shiniessCoefficent", 64);
 
 		// Texture assigning
-		baseMat->SetTexture("textureSample0", faceTex);
-		baseMat->SetTexture("textureSample1", wallTex);
+		baseMat->SetTexture("textureSample0", wallTex);
+
+		//// Light material
+		Material* lightMat = new Material();
+
+		lightMat->LoadShader("./shaders/base.vert", VERT_SHADER);
+		lightMat->LoadShader("./shaders/base.frag", FRAG_SHADER);
+		lightMat->LinkShaders();
+
+		lightMat->SetTexture("textureSample0", lightTex);
 
 		/// Mesh initialisation
 		// Vertex formats
@@ -133,23 +151,86 @@ int RendererProgram::Startup()
 			0, 1, 3,		// First triangle
 			1, 2, 3			// Second triangle
 		});
+		
+		VertexFormat* cubeFormat = new VertexFormat(std::vector<unsigned int>{0});
 
 		// Meshes
 		rectMesh = new Mesh(std::vector<float>{
 			/// Square
-			// Positions				// Colors				// Tex coords
-			-0.5f, 0.5f, 0.0f, 1.f,		1.f, 0.f, 0.f, 1.f,		0.0f, 1.0f,			// Top left	
-			0.5f, 0.5f, 0.0f, 1.f,		0.f, 1.f, 0.f, 1.f,		1.f, 1.f,			// Top right
-			-0.5f, -0.5f, 0.0f,	1.f,	0.f, 0.f, 1.f, 1.f,		0.f, 0.f,			// Bottom left
-			0.5f, -0.5f, 0.0f, 1.f,		1.f, 1.f, 0.f, 1.f,		1.f, 0.f			// Bottom right
-		}, baseMat, rectFormat);
+			// Positions				// Colors				// Tex coords			// Vertex normals
+			-0.5f, 0.5f, 0.0f, 1.f,		1.f, 0.f, 0.f, 1.f,		0.0f, 1.0f,				0.f, 0.f, -1.f, 0.f,			// Top left	
+			0.5f, 0.5f, 0.0f, 1.f,		0.f, 1.f, 0.f, 1.f,		1.f, 1.f,				0.f, 0.f, -1.f, 0.f,			// Top right
+			-0.5f, -0.5f, 0.0f,	1.f,	0.f, 0.f, 1.f, 1.f,		0.f, 0.f,				0.f, 0.f, -1.f, 0.f,			// Bottom left
+			0.5f, -0.5f, 0.0f, 1.f,		1.f, 1.f, 0.f, 1.f,		1.f, 0.f,				0.f, 0.f, -1.f, 0.f				// Bottom right
+		}, COLOR_TEXTURE_NORMAL, baseMat, rectFormat, new Transform());
+		rectMesh->GetTransform()->SetPosition(glm::vec3(0, 0, 0));
+		rectMesh->GetTransform()->SetScale(glm::vec3(10, 10, 10));
+		rectMesh->GetTransform()->SetRotation(glm::vec3(glm::radians(45.f), 0, 0));
 
 		rhombusMesh = new Mesh(std::vector<float>{
-			-0.5f, -0.9f, 0.5f, 1.f,	0.5f, 0.f, 0.f, 1.f,	0.0f, 1.0f,
-			-0.25f, -0.65f, 0.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	1.f, 1.f,
-			0.25f, -0.65f, 0.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	0.f, 0.f,
-			0.5f, -0.9f, 0.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	1.f, 0.f
-		}, baseMat, rhombusFormat);
+			-0.5f, -0.9f, 1.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	0.0f, 1.0f,
+			-0.25f, -0.65f, 1.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	1.f, 1.f,
+			0.25f, -0.65f, 1.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	0.f, 0.f,
+			0.5f, -0.9f, 1.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	1.f, 0.f
+		}, COLOR_TEXTURE, baseMat, rhombusFormat, new Transform());
+		rhombusMesh->GetTransform()->SetPosition(glm::vec3(-10, 0, 0));
+
+		std::vector<float> cubeVerts = {
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, -1.0f, 0.f,
+			0.5f, -0.5f, -0.5f,	1.f,		1.f, 0.f,			0.0f,  0.0f, -1.0f,	 0.f,
+			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, -1.0f,	 0.f,
+			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, -1.0f,	 0.f,
+			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  0.0f, -1.0f, 0.f,
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, -1.0f, 0.f,
+																				 
+			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, 1.0f,	 0.f,
+			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  0.0f, 1.0f,	 0.f,
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, 1.0f,	 0.f,
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, 1.0f,	 0.f,
+			-0.5f,  0.5f,  0.5f,1.f,		0.f, 1.f,			 0.0f,  0.0f, 1.0f,	 0.f,
+			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, 1.0f,	 0.f,
+																				 
+			-0.5f,  0.5f,  0.5f,1.f,		1.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
+			-0.5f,  0.5f, -0.5f,1.f,		1.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
+			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
+			-0.5f,  0.5f,  0.5f,1.f,		1.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
+																				 
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
+			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
+			0.5f, -0.5f, -0.5f,	1.f,		0.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
+			0.5f, -0.5f, -0.5f,	1.f,		0.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
+			0.5f, -0.5f,  0.5f,	1.f,		0.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
+																				 
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f, -1.0f,  0.0f, 0.f,
+			0.5f, -0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f, -1.0f,  0.0f,	 0.f,
+			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f, -1.0f,  0.0f,	 0.f,
+			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f, -1.0f,  0.0f,	 0.f,
+			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f, -1.0f,  0.0f, 0.f,
+			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f, -1.0f,  0.0f, 0.f,
+																				 
+			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  1.0f,  0.0f, 0.f,
+			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  1.0f,  0.0f,	 0.f,
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  1.0f,  0.0f,	 0.f,
+			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  1.0f,  0.0f,	 0.f,
+			-0.5f,  0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  1.0f,  0.0f, 0.f,
+			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  1.0f,  0.0f, 0.f
+		};
+
+		for (int i = 0; i < 10; ++i) {
+			cubeMeshes.push_back(new Mesh(cubeVerts, TEXTURE_NORMAL,
+				baseMat, cubeFormat, new Transform()));
+
+			cubeMeshes[i]->GetTransform()->SetPosition(glm::vec3(i * 2, i * 2, i * 2));
+			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(4, 4, 4));
+		}
+
+		lightRepMesh = new Mesh(cubeVerts, TEXTURE_NORMAL, lightMat, cubeFormat, new Transform());
+		lightRepMesh->GetTransform()->SetPosition(DEFAULT_LIGHT_POS);
+		lightRepMesh->GetTransform()->SetScale(glm::vec3(4, 4, 4));
+
 	}
 	else {
 		/// Vertex shader
@@ -254,6 +335,7 @@ void RendererProgram::Shutdown()
 
 	delete wallTex;
 	delete faceTex;
+	delete lightTex;
 
 	delete sphereTransform;
 	
@@ -298,6 +380,11 @@ void RendererProgram::Update(float a_dt)
 	aie::Gizmos::addSphere(glm::vec3(0), 2, 12, 12, glm::vec4(1, 0, 0, 1), &sphereTransform->GetMatrix());
 #pragma endregion Gizmo creation
 
+	/// Transform
+	for (int i = 0; i < 10; ++i) {
+		cubeMeshes[i]->GetTransform()->SetRotation(glm::vec3(float(glfwGetTime()), float(glfwGetTime()), float(glfwGetTime())));
+	}
+
 	/// Input
 	InputMonitor* input = InputMonitor::GetInstance();
 	static float colorMix = 0.f;
@@ -307,7 +394,7 @@ void RendererProgram::Update(float a_dt)
 		colorMix += colorChangeSpeed * a_dt;
 	}
 	if (input->GetKeyDown(GLFW_KEY_DOWN)) {	// Decrease interpolation value
-		colorMix -= colorChangeSpeed * a_dt;
+		colorMix -= colorChangeSpeed * a_dt; 
 	}
 
 	rectMesh->GetMaterial()->SetFloat("colorMix", colorMix);
@@ -321,10 +408,16 @@ void RendererProgram::Render()
 	if (WRAPPED_OGL_OTHER) {
 		//triMesh->GetMaterial()->SetVec4("overrideColor", glm::vec4(0, 1.f, 1.f, 1.f));		// If meshes share the same material, then modifying variables in one material will apply to all
 		static float offset = 0.5f;
-		rectMesh->GetMaterial()->SetFloat("yOffset", offset);
+		//rectMesh->GetMaterial()->SetFloat("yOffset", offset);
 
-		rectMesh->Draw();
-		rhombusMesh->Draw();
+		//rectMesh->Draw(mainCamera);
+		//rhombusMesh->Draw(mainCamera);
+		
+		lightRepMesh->Draw(mainCamera);
+
+		for (int i = 0; i < 10; ++i) {
+			cubeMeshes[i]->Draw(mainCamera);
+		}
 
 		offset -= 0.001f;
 	}
