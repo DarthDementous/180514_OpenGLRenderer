@@ -23,6 +23,7 @@ public:
 	void SetVec4(const char* a_name, const glm::vec4& a_val);
 	void SetTexture(const char* a_name, TextureWrapper* a_tex);
 	void SetMat4(const char* a_name, const glm::mat4& a_val);
+	int FindLocation(const char* a_name);
 
 	operator unsigned int() { return m_ID; }	// Allow class to be used in parameters of openGL functions
 protected:

@@ -81,17 +81,15 @@ void Material::SetBool(const char * a_name, bool a_val)
 	// Bind shader program
 	glUseProgram(*this);
 
-	int foundKernel = glGetUniformLocation(*this, a_name);			// Returns int in case it can't find location (-1)
-	glUniform1i(foundKernel, int(a_val));							
+	glUniform1i(FindLocation(a_name), int(a_val));							
 }
 
 void Material::SetInt(const char * a_name, int a_val)
 {
 	// Bind shader program
 	glUseProgram(*this);
-
-	int foundKernel = glGetUniformLocation(*this, a_name);			
-	glUniform1i(foundKernel, a_val);								
+		
+	glUniform1i(FindLocation(a_name), a_val);								
 }
 
 void Material::SetFloat(const char * a_name, float a_val)
@@ -99,8 +97,7 @@ void Material::SetFloat(const char * a_name, float a_val)
 	// Bind shader program
 	glUseProgram(*this);
 
-	int foundKernel = glGetUniformLocation(*this, a_name);
-	glUniform1f(foundKernel, a_val);
+	glUniform1f(FindLocation(a_name), a_val);
 }
 
 void Material::SetVec3(const char * a_name, const glm::vec3 & a_val)
@@ -108,8 +105,7 @@ void Material::SetVec3(const char * a_name, const glm::vec3 & a_val)
 	// Bind shader program
 	glUseProgram(*this);
 
-	int foundKernel = glGetUniformLocation(*this, a_name);
-	glUniform3f(foundKernel, a_val.x, a_val.y, a_val.z);
+	glUniform3f(FindLocation(a_name), a_val.x, a_val.y, a_val.z);
 }
 
 void Material::SetVec4(const char * a_name, const glm::vec4 & a_val)
@@ -117,8 +113,7 @@ void Material::SetVec4(const char * a_name, const glm::vec4 & a_val)
 	// Bind shader program
 	glUseProgram(*this);
 
-	int foundKernel = glGetUniformLocation(*this, a_name);
-	glUniform4f(foundKernel, a_val.x, a_val.y, a_val.z, a_val.w);
+	glUniform4f(FindLocation(a_name), a_val.x, a_val.y, a_val.z, a_val.w);
 }
 
 void Material::SetTexture(const char * a_name, TextureWrapper * a_tex)
@@ -133,8 +128,36 @@ void Material::SetMat4(const char * a_name, const glm::mat4 & a_val)
 {
 	glUseProgram(*this);
 
+	glUniformMatrix4fv(FindLocation(a_name), 1, GL_FALSE, glm::value_ptr(a_val));	// Convert GLM matrix 4 to float pointer to be compatable with openGL
+}
+
+/**
+*	@brief Attempt to find corresponding uniform variable in shader program.
+*	@param a_name is the name of the uniform variable to find.
+*	@return integer ID of the uniform variable location, or -1 if unable to find it.
+*/
+int Material::FindLocation(const char * a_name)
+{
+	// Bind as current shader program in order to search for the kernel
+	glUseProgram(*this);
+
 	int foundKernel = glGetUniformLocation(*this, a_name);
-	glUniformMatrix4fv(foundKernel, 1, GL_FALSE, glm::value_ptr(a_val));	// Convert GLM matrix 4 to float pointer to be compatable with openGL
+
+	// Error handling
+	try {
+		if (foundKernel == -1) {		// Unable to find kernel
+			int boundProgramID; glGetIntegerv(GL_CURRENT_PROGRAM, &boundProgramID);
+
+			char errorMsg[256];
+			sprintf_s(errorMsg, "ERROR::MATERIAL::FAILED_TO_FIND: %s in %i with %i bound \nDescription: Not a uniform name in material, perhaps it was misspelled?", 
+				a_name, m_ID, boundProgramID);
+
+			throw std::runtime_error(errorMsg);
+		}
+	}
+	catch (std::exception const& e) { std::cout << "Exception: " << e.what() << std::endl;/* __debugbreak()*/; }
+
+	return foundKernel;
 }
 
 

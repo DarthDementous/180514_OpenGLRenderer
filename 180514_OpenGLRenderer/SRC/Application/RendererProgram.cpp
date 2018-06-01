@@ -116,17 +116,26 @@ int RendererProgram::Startup()
 		Material* baseMat = new Material();
 
 		baseMat->LoadShader("./shaders/base.vert", VERT_SHADER);
-		baseMat->LoadShader("./shaders/base_lit.frag", FRAG_SHADER);
+		baseMat->LoadShader("./shaders/base_lit_fixed.frag", FRAG_SHADER);
 
 		baseMat->LinkShaders();
 
 		// Modify material parameters
-		baseMat->SetFloat("ambientCoefficient", 0.1f);
-		baseMat->SetVec4("lightColor", glm::vec4(1));
-		baseMat->SetVec4("lightPos", DEFAULT_LIGHT_POS);
-		
-		baseMat->SetFloat("specularCoefficient", 1.0f);
-		baseMat->SetFloat("shiniessCoefficent", 64);
+		baseMat->SetVec4("material.ambientColor", glm::vec4(1));
+		baseMat->SetVec4("material.diffuseColor", glm::vec4(1));
+		baseMat->SetVec4("material.specular", glm::vec4(glm::vec3(0.5f), 1));
+		baseMat->SetFloat("material.shininessCoefficient", 32);
+
+		baseMat->SetVec4("light.ambient", glm::vec4(glm::vec3(0.2f), 1.f));
+		baseMat->SetVec4("light.diffuse", glm::vec4(1));
+		baseMat->SetVec4("light.specular", glm::vec4(1));
+		baseMat->SetVec4("light.position", DEFAULT_LIGHT_POS);
+		//baseMat->SetFloat("ambientCoefficient", 0.1f);
+		//baseMat->SetVec4("lightColor", glm::vec4(1));
+
+		//
+		//baseMat->SetFloat("specularCoefficient", 0.5f);
+		//baseMat->SetFloat("shininessCoefficient", 32);
 
 		// Texture assigning
 		baseMat->SetTexture("textureSample0", wallTex);
@@ -139,6 +148,20 @@ int RendererProgram::Startup()
 		lightMat->LinkShaders();
 
 		lightMat->SetTexture("textureSample0", lightTex);
+
+		//// Plane material
+		Material* rectMat = new Material();
+
+		rectMat->LoadShader("./shaders/base.vert", VERT_SHADER);
+		rectMat->LoadShader("./shaders/base_lit_color.frag", FRAG_SHADER);
+		rectMat->LinkShaders();
+
+		rectMat->SetFloat("ambientCoefficient", 0.1f);
+		rectMat->SetVec4("lightColor", glm::vec4(1));
+		rectMat->SetVec4("lightPos", DEFAULT_LIGHT_POS);
+
+		rectMat->SetFloat("specularCoefficient", 0.5f);
+		rectMat->SetFloat("shininessCoefficient", 32);
 
 		/// Mesh initialisation
 		// Vertex formats
@@ -157,15 +180,15 @@ int RendererProgram::Startup()
 		// Meshes
 		rectMesh = new Mesh(std::vector<float>{
 			/// Square
-			// Positions				// Colors				// Tex coords			// Vertex normals
-			-0.5f, 0.5f, 0.0f, 1.f,		1.f, 0.f, 0.f, 1.f,		0.0f, 1.0f,				0.f, 0.f, -1.f, 0.f,			// Top left	
-			0.5f, 0.5f, 0.0f, 1.f,		0.f, 1.f, 0.f, 1.f,		1.f, 1.f,				0.f, 0.f, -1.f, 0.f,			// Top right
-			-0.5f, -0.5f, 0.0f,	1.f,	0.f, 0.f, 1.f, 1.f,		0.f, 0.f,				0.f, 0.f, -1.f, 0.f,			// Bottom left
-			0.5f, -0.5f, 0.0f, 1.f,		1.f, 1.f, 0.f, 1.f,		1.f, 0.f,				0.f, 0.f, -1.f, 0.f				// Bottom right
-		}, COLOR_TEXTURE_NORMAL, baseMat, rectFormat, new Transform());
+			// Positions				// Colors					// Tex coords			// Vertex normals
+			-0.5f, 0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		0.0f, 1.0f,				0.f, 0.f, -1.f, 0.f,			// Top left	
+			0.5f, 0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		1.f, 1.f,				0.f, 0.f, -1.f, 0.f,			// Top right
+			-0.5f, -0.5f, 0.0f,	1.f,	1.0f, 0.5f, 0.31f, 1.f,		0.f, 0.f,				0.f, 0.f, -1.f, 0.f,			// Bottom left
+			0.5f, -0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		1.f, 0.f,				0.f, 0.f, -1.f, 0.f				// Bottom right
+		}, COLOR_TEXTURE_NORMAL, rectMat, rectFormat, new Transform());
 		rectMesh->GetTransform()->SetPosition(glm::vec3(0, 0, 0));
 		rectMesh->GetTransform()->SetScale(glm::vec3(10, 10, 10));
-		rectMesh->GetTransform()->SetRotation(glm::vec3(glm::radians(45.f), 0, 0));
+		rectMesh->GetTransform()->SetRotation(glm::vec3(glm::radians(90.f), 0, 0));
 
 		rhombusMesh = new Mesh(std::vector<float>{
 			-0.5f, -0.9f, 1.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	0.0f, 1.0f,
@@ -219,17 +242,17 @@ int RendererProgram::Startup()
 			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  1.0f,  0.0f, 0.f
 		};
 
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
 			cubeMeshes.push_back(new Mesh(cubeVerts, TEXTURE_NORMAL,
 				baseMat, cubeFormat, new Transform()));
 
 			cubeMeshes[i]->GetTransform()->SetPosition(glm::vec3(i * 2, i * 2, i * 2));
-			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(4, 4, 4));
+			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(2, 2, 2));
 		}
 
 		lightRepMesh = new Mesh(cubeVerts, TEXTURE_NORMAL, lightMat, cubeFormat, new Transform());
 		lightRepMesh->GetTransform()->SetPosition(DEFAULT_LIGHT_POS);
-		lightRepMesh->GetTransform()->SetScale(glm::vec3(4, 4, 4));
+		lightRepMesh->GetTransform()->SetScale(glm::vec3(1, 1, 1));
 
 	}
 	else {
@@ -377,27 +400,39 @@ void RendererProgram::Update(float a_dt)
 	}
 
 	// Sphere
-	aie::Gizmos::addSphere(glm::vec3(0), 2, 12, 12, glm::vec4(1, 0, 0, 1), &sphereTransform->GetMatrix());
+	//aie::Gizmos::addSphere(glm::vec3(0), 2, 12, 12, glm::vec4(1, 0, 0, 1), &sphereTransform->GetMatrix());
 #pragma endregion Gizmo creation
 
-	/// Transform
-	for (int i = 0; i < 10; ++i) {
+	/// Lighting update
+	// Update orbit position of light
+	static float orbitRadius = 10.f;
+	static float orbitHeight = 2.f;
+
+	glm::vec3 orbitPos = glm::vec3(cosf(glfwGetTime()) * orbitRadius, orbitHeight, sinf(glfwGetTime()) * orbitRadius); 	// Get point on orbit circumference based off current angle
+
+	lightRepMesh->GetTransform()->SetPosition(orbitPos);
+
+	// Update light pos information on materials
+	glm::vec4 newLightPos = glm::vec4(lightRepMesh->GetTransform()->GetPosition(), 1);//(mainCamera->GetTransform()->GetPosition(), 1);
+
+	for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
 		cubeMeshes[i]->GetTransform()->SetRotation(glm::vec3(float(glfwGetTime()), float(glfwGetTime()), float(glfwGetTime())));
+		cubeMeshes[i]->GetMaterial()->SetVec4("light.position", newLightPos);
 	}
+
+	rectMesh->GetMaterial()->SetVec4("lightPos", newLightPos);
 
 	/// Input
 	InputMonitor* input = InputMonitor::GetInstance();
-	static float colorMix = 0.f;
-	static float colorChangeSpeed = 1.f;
+	float movementSpeed = 10.f;
 
-	if (input->GetKeyDown(GLFW_KEY_UP)) {	// Increase interpolation value
-		colorMix += colorChangeSpeed * a_dt;
+	if (input->GetKeyDown(GLFW_KEY_SPACE)) {	// Move light up
+		orbitHeight += movementSpeed * a_dt;
 	}
-	if (input->GetKeyDown(GLFW_KEY_DOWN)) {	// Decrease interpolation value
-		colorMix -= colorChangeSpeed * a_dt; 
+	if (input->GetKeyDown(GLFW_KEY_LEFT_SHIFT)) {	// Move light down
+		orbitHeight -= movementSpeed * a_dt;
 	}
 
-	rectMesh->GetMaterial()->SetFloat("colorMix", colorMix);
 }
 
 void RendererProgram::Render()
@@ -410,12 +445,12 @@ void RendererProgram::Render()
 		static float offset = 0.5f;
 		//rectMesh->GetMaterial()->SetFloat("yOffset", offset);
 
-		//rectMesh->Draw(mainCamera);
+		rectMesh->Draw(mainCamera);
 		//rhombusMesh->Draw(mainCamera);
 		
 		lightRepMesh->Draw(mainCamera);
 
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
 			cubeMeshes[i]->Draw(mainCamera);
 		}
 

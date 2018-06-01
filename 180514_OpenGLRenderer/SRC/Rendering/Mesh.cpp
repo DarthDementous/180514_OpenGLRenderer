@@ -84,16 +84,19 @@ void Mesh::Draw(RenderCamera* a_camera)
 	m_material->SetMat4("projectionTransform", a_camera->GetProjection());
 
 	// Update lighting data
-	m_material->SetVec3("viewPos", a_camera->GetTransform()->GetPosition());
+	m_material->SetVec4("viewerPos", glm::vec4(a_camera->GetTransform()->GetPosition(), 1));
 
 	// Load materials, and formatting into openGL before drawing
 	glUseProgram(*m_material);
 	m_vertFormat->SetAsContext();
 
-	if (PRESET_FORMAT_DRAW) {
+	// Determine draw method from vertex format
+	unsigned int indiceNum = m_vertFormat->GetElementNum();
+
+	if (indiceNum > 1) {	// Mesh has preset draw format
 		glDrawElements(GL_TRIANGLES, m_vertFormat->GetElementNum(), GL_UNSIGNED_INT, 0);		// Renderer shape hint, number of indices, offset in indice buffer
 	}
-	else {
+	else {					// Mesh has no preset draw format
 		unsigned int vertNum = sizeof(float) * m_rawVerticeData.size() / (sizeof(float) * 10);	// Divide array size by vertex stride to get number of vertices
 		glDrawArrays(GL_TRIANGLES, 0, vertNum);
 	}

@@ -30,9 +30,6 @@
     <ClCompile Include="SRC\Rendering\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Application\RenderCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\Application\RendererProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,6 +51,9 @@
     <ClCompile Include="SRC\Rendering\TextureWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SRC\Rendering\RenderCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INC\Rendering\Material.h">
@@ -69,9 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INC\Application\InputMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INC\Application\RenderCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INC\Rendering\gl_core_4_4.h">
@@ -92,11 +89,15 @@
     <ClInclude Include="INC\Rendering\TextureWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Rendering\RenderCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BUILD\shaders\base.vert" />
     <None Include="BUILD\shaders\base_mix.frag" />
-    <None Include="BUILD\shaders\base_lit.frag" />
     <None Include="BUILD\shaders\base.frag" />
+    <None Include="BUILD\shaders\base_lit_fixed.frag" />
+    <None Include="BUILD\shaders\base_lit_color.frag" />
   </ItemGroup>
 </Project>
