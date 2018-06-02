@@ -8,6 +8,9 @@ class Mesh;
 class RenderCamera;
 class Transform;
 class TextureWrapper;
+class PhongLight_Dir;
+class PhongLight_Point;
+class PhongLight_Spot;
 
 class RendererProgram : public Program {
 public:
@@ -35,4 +38,11 @@ private:
 	TextureWrapper* wallTex;
 	TextureWrapper* faceTex;
 	TextureWrapper* lightTex;
+	TextureWrapper*	crateTex;
+	TextureWrapper* crateSpecularTex;
+
+	PhongLight_Dir*		dirLight;
+	PhongLight_Point*	ptLight1;
+	PhongLight_Point*	ptLight2;
+	PhongLight_Spot*	spotLight;
 };

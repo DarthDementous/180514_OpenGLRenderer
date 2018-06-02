@@ -8,6 +8,9 @@
 #include "VertexFormat.h"
 #include "Mesh.h"
 #include "TextureWrapper.h"
+#include "Light\PhongLight_Dir.h"
+#include "Light\PhongLight_Point.h"
+#include "Light\PhongLight_Spot.h"
 
 #include <AIE/Gizmos.h>
 #include <glm/vec4.hpp>
@@ -31,7 +34,7 @@ RendererProgram::~RendererProgram()
 
 int RendererProgram::Startup()
 {
-	aie::Gizmos::create(1000, 1000, 1000, 1000);
+	aie::Gizmos::create(10000, 10000, 10000, 10000);
 
 	/// Variable initialisation
 	viewMatrix = glm::lookAt(glm::vec3(-10, 10, -10), glm::vec3(0), glm::vec3(0, 1, 0));			// Create view matrix looking at at an arbitrary point
@@ -43,6 +46,14 @@ int RendererProgram::Startup()
 	mainCamera->SetProjection(glm::radians(45.f), 16 / 9.f, 0.1f, 1000.f);
 	mainCamera->GetTransform()->SetPosition(glm::vec3(0, 5, -5));
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
+
+	/// Light initialisation
+	dirLight = new PhongLight_Dir(glm::vec4(0.05f), glm::vec4(0.4f), glm::vec4(0.5f), DEFAULT_LIGHT_DIR);
+	
+	ptLight1 = new PhongLight_Point(glm::vec4(0.05f), glm::vec4(0.8f), glm::vec4(1.f), DEFAULT_LIGHT_POS1, 10.f, DEFAULT_MIN_ILLUMINATION);
+	ptLight2 = new PhongLight_Point(glm::vec4(0.05f), glm::vec4(0.8f), glm::vec4(1.f), DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION);
+
+	spotLight = new PhongLight_Spot(glm::vec4(0.05f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f);
 
 	/// Texture initialisation
 	if (WRAPPED_OGL_TEX) {
@@ -60,6 +71,16 @@ int RendererProgram::Startup()
 		lightTex->EnableFiltering();
 		lightTex->EnableMipmapping();
 		lightTex->EnableWrapping();
+
+		crateTex = new TextureWrapper("./textures/container2.png", 12, true);
+		crateTex->EnableFiltering();
+		crateTex->EnableMipmapping();
+		crateTex->EnableWrapping();
+
+		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", 22, true);
+		crateSpecularTex->EnableFiltering();
+		crateSpecularTex->EnableMipmapping();
+		crateSpecularTex->EnableWrapping();
 	}
 	else {
 		// Load wall texture data into char array
@@ -123,22 +144,43 @@ int RendererProgram::Startup()
 		// Modify material parameters
 		baseMat->SetVec4("material.ambientColor", glm::vec4(1));
 		baseMat->SetVec4("material.diffuseColor", glm::vec4(1));
-		baseMat->SetVec4("material.specular", glm::vec4(glm::vec3(0.5f), 1));
-		baseMat->SetFloat("material.shininessCoefficient", 32);
+		baseMat->SetVec4("material.specular", glm::vec4(1));
+		baseMat->SetFloat("material.shininessCoefficient", 64.f);
 
-		baseMat->SetVec4("light.ambient", glm::vec4(glm::vec3(0.2f), 1.f));
-		baseMat->SetVec4("light.diffuse", glm::vec4(1));
-		baseMat->SetVec4("light.specular", glm::vec4(1));
-		baseMat->SetVec4("light.position", DEFAULT_LIGHT_POS);
-		//baseMat->SetFloat("ambientCoefficient", 0.1f);
-		//baseMat->SetVec4("lightColor", glm::vec4(1));
+		/// Modify lighting parameters
+		// Directional lights
+		baseMat->SetVec4("dirLight.ambient", dirLight->GetAmbient());
+		baseMat->SetVec4("dirLight.diffuse", dirLight->GetDiffuse());
+		baseMat->SetVec4("dirLight.specular", dirLight->GetSpecular());
+		baseMat->SetVec4("dirLight.castDir", dirLight->GetCastDir());
 
-		//
-		//baseMat->SetFloat("specularCoefficient", 0.5f);
-		//baseMat->SetFloat("shininessCoefficient", 32);
+		// Point lights
+		baseMat->SetVec4("pointLights[0].ambient", ptLight1->GetAmbient());
+		baseMat->SetVec4("pointLights[0].diffuse", ptLight1->GetDiffuse());
+		baseMat->SetVec4("pointLights[0].specular", ptLight1->GetSpecular());
+		baseMat->SetVec4("pointLights[0].position", ptLight1->GetPos());
+		baseMat->SetFloat("pointLights[0].illuminationRadius", ptLight1->GetIlluminationRadius());
+		baseMat->SetFloat("pointLights[0].minIllumination", ptLight1->GetMinIllumination());
+
+		baseMat->SetVec4("pointLights[1].ambient", ptLight2->GetAmbient());
+		baseMat->SetVec4("pointLights[1].diffuse", ptLight2->GetDiffuse());
+		baseMat->SetVec4("pointLights[1].specular", ptLight2->GetSpecular());
+		baseMat->SetVec4("pointLights[1].position", ptLight2->GetPos());
+		baseMat->SetFloat("pointLights[1].illuminationRadius", ptLight2->GetIlluminationRadius());
+		baseMat->SetFloat("pointLights[1].minIllumination", ptLight2->GetMinIllumination());
+
+		// Spot lights
+		baseMat->SetVec4("spotLight.ambient", spotLight->GetAmbient());
+		baseMat->SetVec4("spotLight.diffuse", spotLight->GetDiffuse());
+		baseMat->SetVec4("spotLight.specular", spotLight->GetSpecular());
+		baseMat->SetVec4("spotLight.position", spotLight->GetPos());
+		baseMat->SetVec4("spotLight.spotDir", spotLight->GetSpotDir());
+		baseMat->SetFloat("spotLight.spotInnerCosine", spotLight->GetSpotInnerCosine());
+		baseMat->SetFloat("spotLight.spotOuterCosine", spotLight->GetSpotOuterCosine());
 
 		// Texture assigning
-		baseMat->SetTexture("textureSample0", wallTex);
+		baseMat->SetTexture("diffuseMap", crateTex);
+		baseMat->SetTexture("specularMap", crateSpecularTex);
 
 		//// Light material
 		Material* lightMat = new Material();
@@ -158,7 +200,7 @@ int RendererProgram::Startup()
 
 		rectMat->SetFloat("ambientCoefficient", 0.1f);
 		rectMat->SetVec4("lightColor", glm::vec4(1));
-		rectMat->SetVec4("lightPos", DEFAULT_LIGHT_POS);
+		rectMat->SetVec4("lightPos", DEFAULT_LIGHT_POS1);
 
 		rectMat->SetFloat("specularCoefficient", 0.5f);
 		rectMat->SetFloat("shininessCoefficient", 32);
@@ -247,12 +289,12 @@ int RendererProgram::Startup()
 				baseMat, cubeFormat, new Transform()));
 
 			cubeMeshes[i]->GetTransform()->SetPosition(glm::vec3(i * 2, i * 2, i * 2));
-			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(2, 2, 2));
+			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(1));
 		}
 
 		lightRepMesh = new Mesh(cubeVerts, TEXTURE_NORMAL, lightMat, cubeFormat, new Transform());
-		lightRepMesh->GetTransform()->SetPosition(DEFAULT_LIGHT_POS);
-		lightRepMesh->GetTransform()->SetScale(glm::vec3(1, 1, 1));
+		lightRepMesh->GetTransform()->SetPosition(DEFAULT_LIGHT_POS1);
+		lightRepMesh->GetTransform()->SetScale(glm::vec3(0.2));
 
 	}
 	else {
@@ -359,6 +401,12 @@ void RendererProgram::Shutdown()
 	delete wallTex;
 	delete faceTex;
 	delete lightTex;
+	delete crateTex;
+
+	delete dirLight;
+	delete ptLight1;
+	delete ptLight2;
+	delete spotLight;
 
 	delete sphereTransform;
 	
@@ -368,7 +416,7 @@ void RendererProgram::Shutdown()
 void RendererProgram::Update(float a_dt)
 {
 	mainCamera->Update(a_dt);
-	
+
 #pragma region Gizmos
 	aie::Gizmos::clear();									// Refresh gizmos for new frame
 
@@ -399,40 +447,67 @@ void RendererProgram::Update(float a_dt)
 		);
 	}
 
-	// Sphere
-	//aie::Gizmos::addSphere(glm::vec3(0), 2, 12, 12, glm::vec4(1, 0, 0, 1), &sphereTransform->GetMatrix());
+	// Point lights
+	aie::Gizmos::addSphere(ptLight1->GetPos(), 0.2f, 12, 12, ptLight1->GetAmbient());
+	aie::Gizmos::addSphere(ptLight2->GetPos(), 0.2f, 12, 12, ptLight2->GetAmbient());
+
+	// Spot lights
+	//aie::Gizmos::addSphere(spotLight->GetPos(), 0.2f, 12, 12, spotLight->GetAmbient());
+
+#ifdef DEBUG	// Debug draw point light radius
+	glm::vec4 light1Color = glm::vec4(ptLight1->GetDiffuse().x, ptLight1->GetDiffuse().y, ptLight1->GetDiffuse().z, 0.25f);
+	aie::Gizmos::addSphere(ptLight1->GetPos(), ptLight1->GetIlluminationRadius(), 12, 12, light1Color);		// Illumination radius
+
+	glm::vec4 light2Color = glm::vec4(ptLight2->GetDiffuse().x, ptLight2->GetDiffuse().y, ptLight2->GetDiffuse().z, 0.25f);
+	aie::Gizmos::addSphere(ptLight2->GetPos(), ptLight2->GetIlluminationRadius(), 12, 12, light2Color);		// Illumination radius
+#endif
 #pragma endregion Gizmo creation
 
 	/// Lighting update
-	// Update orbit position of light
-	static float orbitRadius = 10.f;
-	static float orbitHeight = 2.f;
+	// Update spot light position and direction based off camera
+	spotLight->SetPos(glm::vec4(mainCamera->GetTransform()->GetPosition(), 1));
+	spotLight->SetSpotDir(glm::vec4(mainCamera->GetTransform()->Forward(), 0));
 
-	glm::vec3 orbitPos = glm::vec3(cosf(glfwGetTime()) * orbitRadius, orbitHeight, sinf(glfwGetTime()) * orbitRadius); 	// Get point on orbit circumference based off current angle
+	if (ORBIT_LIGHT) {
+		// Update orbit position of light
+		static float orbitRadius = 10.f;
+		static float orbitHeight = 2.f;
 
-	lightRepMesh->GetTransform()->SetPosition(orbitPos);
+		glm::vec3 orbitPos = glm::vec3(cosf(glfwGetTime()) * orbitRadius, orbitHeight, sinf(glfwGetTime()) * orbitRadius); 	// Get point on orbit circumference based off current angle
 
-	// Update light pos information on materials
-	glm::vec4 newLightPos = glm::vec4(lightRepMesh->GetTransform()->GetPosition(), 1);//(mainCamera->GetTransform()->GetPosition(), 1);
+		//lightRepMesh->GetTransform()->SetPosition(orbitPos);
+		ptLight2->SetPos(glm::vec4(orbitPos, 1));
+
+		/// Input
+		InputMonitor* input = InputMonitor::GetInstance();
+		float movementSpeed = 10.f;
+
+		if (input->GetKeyDown(GLFW_KEY_SPACE)) {		// Move light up
+			orbitHeight += movementSpeed * a_dt;
+		}
+		if (input->GetKeyDown(GLFW_KEY_LEFT_SHIFT)) {	// Move light down
+			orbitHeight -= movementSpeed * a_dt;
+		}
+		if (input->GetKeyDown(GLFW_KEY_DOWN)) {			// Move light out
+			orbitRadius += movementSpeed * a_dt;
+		}
+		if (input->GetKeyDown(GLFW_KEY_UP)) {			// Move light in
+			orbitRadius -= movementSpeed * a_dt;
+		}
+	}
+
+	// Update light information on materials
+	glm::vec4 newLightPos = ptLight2->GetPos();//glm::vec4(lightRepMesh->GetTransform()->GetPosition(), 1);//(mainCamera->GetTransform()->GetPosition(), 1);
 
 	for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
-		cubeMeshes[i]->GetTransform()->SetRotation(glm::vec3(float(glfwGetTime()), float(glfwGetTime()), float(glfwGetTime())));
-		cubeMeshes[i]->GetMaterial()->SetVec4("light.position", newLightPos);
+		//cubeMeshes[i]->GetTransform()->SetRotation(glm::vec3(float(glfwGetTime()), float(glfwGetTime()), float(glfwGetTime())));
+		cubeMeshes[i]->GetMaterial()->SetVec4("pointLights[1].position", newLightPos);
+
+		cubeMeshes[i]->GetMaterial()->SetVec4("spotLight.position", spotLight->GetPos());
+		cubeMeshes[i]->GetMaterial()->SetVec4("spotLight.spotDir", spotLight->GetSpotDir());
 	}
 
-	rectMesh->GetMaterial()->SetVec4("lightPos", newLightPos);
-
-	/// Input
-	InputMonitor* input = InputMonitor::GetInstance();
-	float movementSpeed = 10.f;
-
-	if (input->GetKeyDown(GLFW_KEY_SPACE)) {	// Move light up
-		orbitHeight += movementSpeed * a_dt;
-	}
-	if (input->GetKeyDown(GLFW_KEY_LEFT_SHIFT)) {	// Move light down
-		orbitHeight -= movementSpeed * a_dt;
-	}
-
+	//rectMesh->GetMaterial()->SetVec4("lightPos", newLightPos);
 }
 
 void RendererProgram::Render()
@@ -445,10 +520,10 @@ void RendererProgram::Render()
 		static float offset = 0.5f;
 		//rectMesh->GetMaterial()->SetFloat("yOffset", offset);
 
-		rectMesh->Draw(mainCamera);
+		//rectMesh->Draw(mainCamera);
 		//rhombusMesh->Draw(mainCamera);
 		
-		lightRepMesh->Draw(mainCamera);
+		//lightRepMesh->Draw(mainCamera);
 
 		for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
 			cubeMeshes[i]->Draw(mainCamera);

@@ -149,13 +149,13 @@ int Material::FindLocation(const char * a_name)
 			int boundProgramID; glGetIntegerv(GL_CURRENT_PROGRAM, &boundProgramID);
 
 			char errorMsg[256];
-			sprintf_s(errorMsg, "ERROR::MATERIAL::FAILED_TO_FIND: %s in %i with %i bound \nDescription: Not a uniform name in material, perhaps it was misspelled?", 
+			sprintf_s(errorMsg, "ERROR::MATERIAL::FAILED_TO_FIND: %s in %i with %i bound \nDescription: Uniform name not found in bound material, it was either misspelled or optimized away for not being used in the shader.", 
 				a_name, m_ID, boundProgramID);
 
 			throw std::runtime_error(errorMsg);
 		}
 	}
-	catch (std::exception const& e) { std::cout << "Exception: " << e.what() << std::endl;/* __debugbreak()*/; }
+	catch (std::exception const& e) { std::cout << "Exception: " << e.what() << std::endl; /*__debugbreak()*/; }
 
 	return foundKernel;
 }

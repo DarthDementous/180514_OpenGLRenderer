@@ -1,4 +1,5 @@
 ﻿  RendererProgram.cpp
-c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(411): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(297): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(476): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   180514_OpenGLRenderer.vcxproj -> C:\Users\ATWindows7\Documents\Repositories\180514_OpenGLRenderer\180514_OpenGLRenderer\BUILD\RendererProgram_Debug_x64.exe
   180514_OpenGLRenderer.vcxproj -> C:\Users\ATWindows7\Documents\Repositories\180514_OpenGLRenderer\180514_OpenGLRenderer\BUILD\RendererProgram_Debug_x64.pdb (Partial PDB)

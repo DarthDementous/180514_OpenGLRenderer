@@ -101,6 +101,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -114,6 +115,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -157,8 +159,12 @@
     <ClCompile Include="SRC\Application\InputMonitor.cpp" />
     <ClCompile Include="SRC\main2.cpp" />
     <ClCompile Include="SRC\main.cpp" />
+    <ClCompile Include="SRC\Rendering\Light\PhongLight_Dir.cpp" />
+    <ClCompile Include="SRC\Rendering\Light\PhongLight_Point.cpp" />
+    <ClCompile Include="SRC\Rendering\Light\PhongLight_Spot.cpp" />
     <ClCompile Include="SRC\Rendering\Mesh.cpp" />
     <ClCompile Include="SRC\Application\Program.cpp" />
+    <ClCompile Include="SRC\Rendering\Light\PhongLight.cpp" />
     <ClCompile Include="SRC\Rendering\RenderCamera.cpp" />
     <ClCompile Include="SRC\Application\RendererProgram.cpp" />
     <ClCompile Include="SRC\Rendering\Material.cpp" />
@@ -167,6 +173,10 @@
     <ClCompile Include="SRC\Rendering\VertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="INC\Rendering\Light\PhongLight.h" />
+    <ClInclude Include="INC\Rendering\Light\PhongLight_Dir.h" />
+    <ClInclude Include="INC\Rendering\Light\PhongLight_Point.h" />
+    <ClInclude Include="INC\Rendering\Light\PhongLight_Spot.h" />
     <ClInclude Include="INC\Rendering\TextureWrapper.h" />
     <ClInclude Include="INC\Rendering\gl_core_4_4.h" />
     <ClInclude Include="INC\Application\InputMonitor.h" />
