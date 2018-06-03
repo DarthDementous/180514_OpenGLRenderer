@@ -66,14 +66,16 @@ void RenderCamera::Update(float a_dt)
 	/// Mouse input
 	glm::vec2 mouseProj = input->GetMouseDeltaXY();
 
-	m_currentPitch	+= mouseProj.y * a_dt * m_maxRotSpeed;
-	m_currentYaw	+= mouseProj.x * a_dt * m_maxRotSpeed;
+	if (mouseProj.y != 0) {
+		m_currentPitch += mouseProj.y * a_dt * m_maxRotSpeed;
+		m_currentYaw += mouseProj.x * a_dt * m_maxRotSpeed;
 
-	// Clamp pitch to avoid gimbal lock
-	m_currentPitch = glm::clamp(m_currentPitch, -70.f, 70.f);
+		// Clamp pitch to avoid gimbal lock
+		m_currentPitch = glm::clamp(m_currentPitch, -70.f, 70.f);
 
-	m_cameraTransform->SetRotation(glm::vec3(glm::radians(m_currentPitch), glm::radians(-m_currentYaw), 0));
+		m_cameraTransform->SetRotation(glm::vec3(glm::radians(m_currentPitch), glm::radians(-m_currentYaw), 0));
 
+	}
 }
 
 void RenderCamera::SetProjection(float a_fov, float a_aspectRatio, float a_near, float a_far)

@@ -9,6 +9,11 @@ PhongLight::~PhongLight()
 {
 }
 
+eLightType PhongLight::GetType()
+{
+	return m_type;
+}
+
 glm::vec4 PhongLight::GetAmbient()
 {
 	return m_ambient;

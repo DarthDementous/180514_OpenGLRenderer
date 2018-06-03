@@ -6,6 +6,8 @@ PhongLight_Spot::PhongLight_Spot(const glm::vec4 & a_ambient, const glm::vec4 & 
 	const glm::vec4 & a_pos, const glm::vec4 & a_dir, float a_spotInnerAngle, float a_spotOuterAngle) :
 	PhongLight(a_ambient, a_diffuse, a_specular), m_pos(a_pos), m_spotDir(a_dir)
 {
+	m_type = SPOT_LIGHT;
+
 	// Get cosines of passed in angles
 	m_spotInnerCosine = glm::cos(glm::radians(a_spotInnerAngle));
 	m_spotOuterCosine = glm::cos(glm::radians(a_spotOuterAngle));

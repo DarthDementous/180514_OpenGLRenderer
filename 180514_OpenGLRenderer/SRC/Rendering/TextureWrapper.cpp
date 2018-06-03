@@ -9,10 +9,17 @@
 /**
 *	@brief Load a texture file and create a texture on the GPU from the data.
 *	@param a_filePath is the path to the texture file, including its extension.
-*	@param a_textureUnit is a number in range of 0-31 (max of 32 samplers in a shader.
+*	@param a_type is the type of texture that is being loaded in (e.g. TEXTURE_DIFFUSE).
 */
-TextureWrapper::TextureWrapper(const char * a_filePath, unsigned char a_textureUnit, bool a_hasAlpha)
+TextureWrapper::TextureWrapper(const char * a_filePath, const std::string& a_type)
 {
+	static char currTexUnit = 0;
+
+	m_type = a_type;
+
+	std::string pathStr = a_filePath;
+	m_fileName = pathStr.substr(pathStr.find_last_of('/') + 1, pathStr.size());		// Get file name by getting sub string from last backslash (not inclusive) to end
+
 	// Attempt to load texture data
 	stbi_set_flip_vertically_on_load(true);		// Images usually expect 0.0 to be the top of the y axis which is the opposite of OpenGL
 
@@ -32,12 +39,15 @@ TextureWrapper::TextureWrapper(const char * a_filePath, unsigned char a_textureU
 	glGenTextures(1, &m_ID);
 
 	// Check if texture unit is in a valid range
-	GLenum texUnitEnum = GL_TEXTURE0 + a_textureUnit;
+	GLenum texUnitEnum = GL_TEXTURE0 + currTexUnit;
 
 	try {
 		if (!(texUnitEnum >= GL_TEXTURE0 && texUnitEnum <= GL_MAX_TEXTURE_IMAGE_UNITS)) {	// Outside of range [0-max texture units on frag shader] inc.
 			char errorMsg[256];
 			sprintf_s(errorMsg, "ERROR::RENDER_TEXTURE::INVALID_TEXTURE_UNIT");
+
+			// Free texture data
+			stbi_image_free(m_texData);
 
 			throw std::runtime_error(errorMsg);
 		}
@@ -45,14 +55,19 @@ TextureWrapper::TextureWrapper(const char * a_filePath, unsigned char a_textureU
 	catch (std::exception const& e) { std::cout << "Exception: " << e.what() << std::endl; }
 
 	// Hold onto assigned texture unit
-	m_textureUnit = a_textureUnit;
+	m_textureUnit = currTexUnit;
+	currTexUnit++;		// Increment to next texture unit for the next texture wrapper object
 
 	// Activate corresponding texture unit so that binding the texture sets it to that texture unit address
 	glActiveTexture(GetTexUnitEnum());
 	glBindTexture(GL_TEXTURE_2D, *this);
 
 	// Set texture data
-	GLenum format = (a_hasAlpha) ? GL_RGBA : GL_RGB;	// If image contains alpha channels (etc. a .png) then load and store as RGBA instead of RGB
+	GLenum format;			// Determine format based off the number of channels in the image (e.g. 3 channels = RGB for stuff like .jpgs)
+
+	if (m_channelNum == 1) { format = GL_RED; }
+	if (m_channelNum == 3) { format = GL_RGB; }
+	if (m_channelNum == 4) { format = GL_RGBA; }
 
 	glTexImage2D(	// NOTE: Applies to currently bound texture
 		GL_TEXTURE_2D,		// Enum for texture dimension
@@ -130,4 +145,14 @@ unsigned char TextureWrapper::GetTexUnit()
 unsigned int TextureWrapper::GetTexUnitEnum()
 {
 	return GL_TEXTURE0 + m_textureUnit;
+}
+
+std::string TextureWrapper::GetType()
+{
+	return m_type;
+}
+
+std::string TextureWrapper::GetFileName()
+{
+	return m_fileName;
 }

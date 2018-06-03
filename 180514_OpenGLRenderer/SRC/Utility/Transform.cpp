@@ -19,6 +19,8 @@ const glm::vec3 & Transform::GetPosition()
 void Transform::SetPosition(const glm::vec3 & a_pos)
 {
 	m_position = a_pos;				// Store value to avoid needing to decompose matrix
+
+	ReconstructMatrix();
 }
 
 const glm::vec3 & Transform::GetScale()
@@ -29,6 +31,8 @@ const glm::vec3 & Transform::GetScale()
 void Transform::SetScale(const glm::vec3 & a_scale)
 {
 	m_scale = a_scale;				// Store value to avoid needing to decompose matrix
+
+	ReconstructMatrix();
 }
 
 const glm::vec3 & Transform::GetRotation()
@@ -39,11 +43,12 @@ const glm::vec3 & Transform::GetRotation()
 void Transform::SetRotation(const glm::vec3 & a_rotation)
 {
 	m_rotation = a_rotation;		// Store value to avoid needing to decompose matrix
+
+	ReconstructMatrix();
 }
 
 const glm::mat4 & Transform::GetMatrix()
 {
-	ReconstructMatrix();
 	return m_transformMatrix;
 }
 

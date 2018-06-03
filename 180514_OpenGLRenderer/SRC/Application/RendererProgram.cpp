@@ -4,13 +4,14 @@
 #include "InputMonitor.h"
 #include "Renderer_Utility_Funcs.h"
 #include "Renderer_Utility_Literals.h"
-#include "Material.h"
+#include "ShaderWrapper.h"
 #include "VertexFormat.h"
 #include "Mesh.h"
 #include "TextureWrapper.h"
 #include "Light\PhongLight_Dir.h"
 #include "Light\PhongLight_Point.h"
 #include "Light\PhongLight_Spot.h"
+#include "Model.h"
 
 #include <AIE/Gizmos.h>
 #include <glm/vec4.hpp>
@@ -48,36 +49,40 @@ int RendererProgram::Startup()
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
 
 	/// Light initialisation
-	dirLight = new PhongLight_Dir(glm::vec4(0.05f), glm::vec4(0.4f), glm::vec4(0.5f), DEFAULT_LIGHT_DIR);
-	
-	ptLight1 = new PhongLight_Point(glm::vec4(0.05f), glm::vec4(0.8f), glm::vec4(1.f), DEFAULT_LIGHT_POS1, 10.f, DEFAULT_MIN_ILLUMINATION);
-	ptLight2 = new PhongLight_Point(glm::vec4(0.05f), glm::vec4(0.8f), glm::vec4(1.f), DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION);
+	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(255.f / 255, 215.f / 255, 0.f, 0.5f) * 0.25f, glm::vec4(255.f / 255, 215.f / 255, 0.f, 0.1f), DEFAULT_LIGHT_DIR));	// Gold specular highlights
+	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(0.4f, 0.f, 0.f, 1.f), glm::vec4(0.5f), glm::vec4(1, 0, 0, 0)));
 
-	spotLight = new PhongLight_Spot(glm::vec4(0.05f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f);
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.8f, 0.f, 0.f, 1.f), glm::vec4(1.f), 
+		DEFAULT_LIGHT_POS1, 20.f, DEFAULT_MIN_ILLUMINATION));
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f, 0.8f, 0.f, 1.f), glm::vec4(1.f), 
+		DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION));
+
+	sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.05f), glm::vec4(1.f), glm::vec4(1.f), 
+		glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f));
 
 	/// Texture initialisation
 	if (WRAPPED_OGL_TEX) {
-		faceTex = new TextureWrapper("./textures/awesomeface.png", 10, true);
+		faceTex = new TextureWrapper("./textures/awesomeface.png", "texture_diffuse");
 		faceTex->EnableFiltering();
 		faceTex->EnableMipmapping();
 		faceTex->EnableWrapping();
 
-		wallTex = new TextureWrapper("./textures/wall.jpg", 11);
+		wallTex = new TextureWrapper("./textures/wall.jpg", "texture_diffuse");
 		wallTex->EnableFiltering();
 		wallTex->EnableMipmapping();
 		wallTex->EnableWrapping();
 
-		lightTex = new TextureWrapper("./textures/light.jpg", 0);
+		lightTex = new TextureWrapper("./textures/light.jpg", "texture_diffuse");
 		lightTex->EnableFiltering();
 		lightTex->EnableMipmapping();
 		lightTex->EnableWrapping();
 
-		crateTex = new TextureWrapper("./textures/container2.png", 12, true);
+		crateTex = new TextureWrapper("./textures/container2.png", "texture_diffuse");
 		crateTex->EnableFiltering();
 		crateTex->EnableMipmapping();
 		crateTex->EnableWrapping();
 
-		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", 22, true);
+		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", "texture_specular");
 		crateSpecularTex->EnableFiltering();
 		crateSpecularTex->EnableMipmapping();
 		crateSpecularTex->EnableWrapping();
@@ -131,170 +136,123 @@ int RendererProgram::Startup()
 
 	}
 
-	/// Material initialisation
 	if (WRAPPED_OGL_OTHER) {
-		//// Base material
-		Material* baseMat = new Material();
+		/// Shader initialisation
+		//// Forward rendering shaders
+		ambientProgram = new ShaderWrapper();
+		ambientProgram->LoadShader("./shaders/forward_ambient.vert", VERT_SHADER);
+		ambientProgram->LoadShader("./shaders/forward_ambient.frag", FRAG_SHADER);
+		ambientProgram->LinkShaders();
 
-		baseMat->LoadShader("./shaders/base.vert", VERT_SHADER);
-		baseMat->LoadShader("./shaders/base_lit_fixed.frag", FRAG_SHADER);
+		directionalProgram = new ShaderWrapper();
+		directionalProgram->LoadShader("./shaders/forward_directional.vert", VERT_SHADER);
+		directionalProgram->LoadShader("./shaders/forward_directional.frag", FRAG_SHADER);
+		directionalProgram->LinkShaders();
 
-		baseMat->LinkShaders();
+		pointProgram = new ShaderWrapper();
+		pointProgram->LoadShader("./shaders/forward_point.vert", VERT_SHADER);
+		pointProgram->LoadShader("./shaders/forward_point.frag", FRAG_SHADER);
+		pointProgram->LinkShaders();
 
-		// Modify material parameters
-		baseMat->SetVec4("material.ambientColor", glm::vec4(1));
-		baseMat->SetVec4("material.diffuseColor", glm::vec4(1));
-		baseMat->SetVec4("material.specular", glm::vec4(1));
-		baseMat->SetFloat("material.shininessCoefficient", 64.f);
+		spotProgram = new ShaderWrapper();
+		spotProgram->LoadShader("./shaders/forward_spot.vert", VERT_SHADER);
+		spotProgram->LoadShader("./shaders/forward_spot.frag", FRAG_SHADER);
+		spotProgram->LinkShaders();
 
-		/// Modify lighting parameters
-		// Directional lights
-		baseMat->SetVec4("dirLight.ambient", dirLight->GetAmbient());
-		baseMat->SetVec4("dirLight.diffuse", dirLight->GetDiffuse());
-		baseMat->SetVec4("dirLight.specular", dirLight->GetSpecular());
-		baseMat->SetVec4("dirLight.castDir", dirLight->GetCastDir());
+		/// Material initialisation
+		Material crateMat;
+		crateMat.ambientColor = glm::vec4(1);
+		crateMat.diffuseColor = glm::vec4(1);
+		crateMat.specular = glm::vec4(1);
+		crateMat.shininessCoefficient = 64.f;
+		crateMat.diffuseMap = crateTex;
+		crateMat.specularMap = crateSpecularTex;
 
-		// Point lights
-		baseMat->SetVec4("pointLights[0].ambient", ptLight1->GetAmbient());
-		baseMat->SetVec4("pointLights[0].diffuse", ptLight1->GetDiffuse());
-		baseMat->SetVec4("pointLights[0].specular", ptLight1->GetSpecular());
-		baseMat->SetVec4("pointLights[0].position", ptLight1->GetPos());
-		baseMat->SetFloat("pointLights[0].illuminationRadius", ptLight1->GetIlluminationRadius());
-		baseMat->SetFloat("pointLights[0].minIllumination", ptLight1->GetMinIllumination());
-
-		baseMat->SetVec4("pointLights[1].ambient", ptLight2->GetAmbient());
-		baseMat->SetVec4("pointLights[1].diffuse", ptLight2->GetDiffuse());
-		baseMat->SetVec4("pointLights[1].specular", ptLight2->GetSpecular());
-		baseMat->SetVec4("pointLights[1].position", ptLight2->GetPos());
-		baseMat->SetFloat("pointLights[1].illuminationRadius", ptLight2->GetIlluminationRadius());
-		baseMat->SetFloat("pointLights[1].minIllumination", ptLight2->GetMinIllumination());
-
-		// Spot lights
-		baseMat->SetVec4("spotLight.ambient", spotLight->GetAmbient());
-		baseMat->SetVec4("spotLight.diffuse", spotLight->GetDiffuse());
-		baseMat->SetVec4("spotLight.specular", spotLight->GetSpecular());
-		baseMat->SetVec4("spotLight.position", spotLight->GetPos());
-		baseMat->SetVec4("spotLight.spotDir", spotLight->GetSpotDir());
-		baseMat->SetFloat("spotLight.spotInnerCosine", spotLight->GetSpotInnerCosine());
-		baseMat->SetFloat("spotLight.spotOuterCosine", spotLight->GetSpotOuterCosine());
-
-		// Texture assigning
-		baseMat->SetTexture("diffuseMap", crateTex);
-		baseMat->SetTexture("specularMap", crateSpecularTex);
-
-		//// Light material
-		Material* lightMat = new Material();
-
-		lightMat->LoadShader("./shaders/base.vert", VERT_SHADER);
-		lightMat->LoadShader("./shaders/base.frag", FRAG_SHADER);
-		lightMat->LinkShaders();
-
-		lightMat->SetTexture("textureSample0", lightTex);
-
-		//// Plane material
-		Material* rectMat = new Material();
-
-		rectMat->LoadShader("./shaders/base.vert", VERT_SHADER);
-		rectMat->LoadShader("./shaders/base_lit_color.frag", FRAG_SHADER);
-		rectMat->LinkShaders();
-
-		rectMat->SetFloat("ambientCoefficient", 0.1f);
-		rectMat->SetVec4("lightColor", glm::vec4(1));
-		rectMat->SetVec4("lightPos", DEFAULT_LIGHT_POS1);
-
-		rectMat->SetFloat("specularCoefficient", 0.5f);
-		rectMat->SetFloat("shininessCoefficient", 32);
+		Material planeMat;
+		planeMat.ambientColor = glm::vec4(1);
+		planeMat.diffuseColor = glm::vec4(1);
+		planeMat.specular = glm::vec4(1);
+		planeMat.shininessCoefficient = 1.f;
+		planeMat.diffuseMap	= lightTex;
 
 		/// Mesh initialisation
+		testModel = new Model("./models/nanosuit/nanosuit.obj");
+
 		// Vertex formats
 		VertexFormat* rectFormat = new VertexFormat(std::vector<unsigned int>{
-			0, 1, 2,		// First triangle
-			1, 2, 3			// Second triangle
+			0, 1, 2,	// First triangle
+			1, 2, 3		// Second triangle
 		});
-
-		VertexFormat* rhombusFormat = new VertexFormat(std::vector<unsigned int>{
-			0, 1, 3,		// First triangle
-			1, 2, 3			// Second triangle
-		});
-		
 		VertexFormat* cubeFormat = new VertexFormat(std::vector<unsigned int>{0});
 
 		// Meshes
-		rectMesh = new Mesh(std::vector<float>{
-			/// Square
-			// Positions				// Colors					// Tex coords			// Vertex normals
-			-0.5f, 0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		0.0f, 1.0f,				0.f, 0.f, -1.f, 0.f,			// Top left	
-			0.5f, 0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		1.f, 1.f,				0.f, 0.f, -1.f, 0.f,			// Top right
-			-0.5f, -0.5f, 0.0f,	1.f,	1.0f, 0.5f, 0.31f, 1.f,		0.f, 0.f,				0.f, 0.f, -1.f, 0.f,			// Bottom left
-			0.5f, -0.5f, 0.0f, 1.f,		1.0f, 0.5f, 0.31f, 1.f,		1.f, 0.f,				0.f, 0.f, -1.f, 0.f				// Bottom right
-		}, COLOR_TEXTURE_NORMAL, rectMat, rectFormat, new Transform());
-		rectMesh->GetTransform()->SetPosition(glm::vec3(0, 0, 0));
-		rectMesh->GetTransform()->SetScale(glm::vec3(10, 10, 10));
-		rectMesh->GetTransform()->SetRotation(glm::vec3(glm::radians(90.f), 0, 0));
+		//// Cube
+		std::vector<Vertex> cubeVerts = {
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f, 1.f), glm::vec2(0.f, 0.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f, -0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f, -0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f, -0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4(0.0f,  0.0f, -1.0f, 0.f)),
+																				 
+			Vertex(glm::vec4(-0.5f, -0.5f,  0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4( 0.0f,  0.0f, 1.0f,0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(0.0f,  0.0f, 1.0f,0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(0.0f,  0.0f, 1.0f,0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(0.0f,  0.0f, 1.0f,0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f,  0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4( 0.0f,  0.0f, 1.0f,0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f,  0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4( 0.0f,  0.0f, 1.0f,0.f)),
+																				 
+			Vertex(glm::vec4(-0.5f,  0.5f,  0.5f,1.f),	glm::vec2(1.f, 0.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f, -0.5f,1.f),	glm::vec2(1.f, 1.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f,  0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f,  0.5f,1.f),	glm::vec2(1.f, 0.f), glm::vec4(-1.0f,  0.0f,  0.0f, 0.f)),
+																				 
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f, -0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f, -0.5f, 1.f),	glm::vec2(0.f, 1.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f, -0.5f, 1.f),	glm::vec2(0.f, 1.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f,  0.5f, 1.f),	glm::vec2(0.f, 0.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(1.0f,  0.0f,  0.0f,	 0.f)),
+																				 
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f,1.f),  glm::vec2(0.f, 1.f), glm::vec4(	0.0f, -1.0f,  0.0f, 0.f	)),
+			Vertex(glm::vec4(0.5f, -0.5f, -0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(	0.0f, -1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(	0.0f, -1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f, -0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(	0.0f, -1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(-0.5f, -0.5f,  0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4(	0.0f, -1.0f,  0.0f, 0.f	)),
+			Vertex(glm::vec4(-0.5f, -0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4(	0.0f, -1.0f,  0.0f, 0.f	)),
 
-		rhombusMesh = new Mesh(std::vector<float>{
-			-0.5f, -0.9f, 1.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	0.0f, 1.0f,
-			-0.25f, -0.65f, 1.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	1.f, 1.f,
-			0.25f, -0.65f, 1.f, 1.f,	0.5f, 0.f, 0.f, 1.f,	0.f, 0.f,
-			0.5f, -0.9f, 1.f, 1.f,		0.5f, 0.f, 0.f, 1.f,	1.f, 0.f
-		}, COLOR_TEXTURE, baseMat, rhombusFormat, new Transform());
-		rhombusMesh->GetTransform()->SetPosition(glm::vec3(-10, 0, 0));
-
-		std::vector<float> cubeVerts = {
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, -1.0f, 0.f,
-			0.5f, -0.5f, -0.5f,	1.f,		1.f, 0.f,			0.0f,  0.0f, -1.0f,	 0.f,
-			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, -1.0f,	 0.f,
-			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, -1.0f,	 0.f,
-			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  0.0f, -1.0f, 0.f,
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, -1.0f, 0.f,
-																				 
-			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, 1.0f,	 0.f,
-			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  0.0f, 1.0f,	 0.f,
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, 1.0f,	 0.f,
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 1.f,			0.0f,  0.0f, 1.0f,	 0.f,
-			-0.5f,  0.5f,  0.5f,1.f,		0.f, 1.f,			 0.0f,  0.0f, 1.0f,	 0.f,
-			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  0.0f, 1.0f,	 0.f,
-																				 
-			-0.5f,  0.5f,  0.5f,1.f,		1.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
-			-0.5f,  0.5f, -0.5f,1.f,		1.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			-1.0f,  0.0f,  0.0f, 0.f,
-			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
-			-0.5f,  0.5f,  0.5f,1.f,		1.f, 0.f,			-1.0f,  0.0f,  0.0f, 0.f,
-																				 
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
-			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
-			0.5f, -0.5f, -0.5f,	1.f,		0.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
-			0.5f, -0.5f, -0.5f,	1.f,		0.f, 1.f,			1.0f,  0.0f,  0.0f,	 0.f,
-			0.5f, -0.5f,  0.5f,	1.f,		0.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			1.0f,  0.0f,  0.0f,	 0.f,
-																				 
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f, -1.0f,  0.0f, 0.f,
-			0.5f, -0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f, -1.0f,  0.0f,	 0.f,
-			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f, -1.0f,  0.0f,	 0.f,
-			0.5f, -0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f, -1.0f,  0.0f,	 0.f,
-			-0.5f, -0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f, -1.0f,  0.0f, 0.f,
-			-0.5f, -0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f, -1.0f,  0.0f, 0.f,
-																				 
-			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  1.0f,  0.0f, 0.f,
-			0.5f,  0.5f, -0.5f,	1.f,		1.f, 1.f,			0.0f,  1.0f,  0.0f,	 0.f,
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  1.0f,  0.0f,	 0.f,
-			0.5f,  0.5f,  0.5f,	1.f,		1.f, 0.f,			0.0f,  1.0f,  0.0f,	 0.f,
-			-0.5f,  0.5f,  0.5f,1.f,		0.f, 0.f,			 0.0f,  1.0f,  0.0f, 0.f,
-			-0.5f,  0.5f, -0.5f,1.f,		0.f, 1.f,			 0.0f,  1.0f,  0.0f, 0.f
+			Vertex(glm::vec4(-0.5f,  0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4( 0.0f,  1.0f,  0.0f, 0.f )),
+			Vertex(glm::vec4(0.5f,  0.5f, -0.5f, 1.f),	glm::vec2(1.f, 1.f), glm::vec4(	0.0f,  1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(	0.0f,  1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(0.5f,  0.5f,  0.5f, 1.f),	glm::vec2(1.f, 0.f), glm::vec4(	0.0f,  1.0f,  0.0f,	 0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f,  0.5f,1.f),	glm::vec2(0.f, 0.f), glm::vec4(	 0.0f,  1.0f,  0.0f, 0.f)),
+			Vertex(glm::vec4(-0.5f,  0.5f, -0.5f,1.f),	glm::vec2(0.f, 1.f), glm::vec4(	 0.0f,  1.0f,  0.0f, 0.f))
 		};
 
 		for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
-			cubeMeshes.push_back(new Mesh(cubeVerts, TEXTURE_NORMAL,
-				baseMat, cubeFormat, new Transform()));
+			sceneMeshes.push_back(new Mesh(cubeVerts, cubeFormat, new Transform(), crateMat));
 
-			cubeMeshes[i]->GetTransform()->SetPosition(glm::vec3(i * 2, i * 2, i * 2));
-			cubeMeshes[i]->GetTransform()->SetScale(glm::vec3(1));
+			sceneMeshes[i]->GetTransform()->SetPosition(glm::vec3(i * 2, i * 2, i * 2));
+			sceneMeshes[i]->GetTransform()->SetScale(glm::vec3(1));
 		}
 
-		lightRepMesh = new Mesh(cubeVerts, TEXTURE_NORMAL, lightMat, cubeFormat, new Transform());
-		lightRepMesh->GetTransform()->SetPosition(DEFAULT_LIGHT_POS1);
-		lightRepMesh->GetTransform()->SetScale(glm::vec3(0.2));
+		//// Rectangle
+		std::vector<Vertex> rectVerts = {
+			// Positions				// Tex coords		// Vertex normals
+			Vertex(glm::vec4(-0.5f, 0.5f, 0.f, 1.f), glm::vec2(0.f, 1.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Top left
+			Vertex(glm::vec4(0.5f, 0.5f, 0.f, 1.f),	 glm::vec2(1.f, 1.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Top right
+			Vertex(glm::vec4(-0.5f, -0.5f, 0.f, 1.f),glm::vec2(0.f, 0.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Bottom left
+			Vertex(glm::vec4(0.5f, -0.5f, 0.f, 1.f), glm::vec2(1.f, 0.f), glm::vec4(0.f, 0.f, -1.f, 0.f))		// Bottom right
+		};
+
+		Transform* rectTransform = new Transform();
+		rectTransform->SetScale(glm::vec3(10.f));
+		rectTransform->SetRotation(glm::vec3(glm::radians(90.f), 0.f, 0.f));
+		rectTransform->Translate(glm::vec3(0, -2.f, 0));
+
+		sceneMeshes.push_back(new Mesh(rectVerts, rectFormat, rectTransform, planeMat));
 
 	}
 	else {
@@ -395,27 +353,85 @@ int RendererProgram::Startup()
 void RendererProgram::Shutdown()
 {
 	aie::Gizmos::destroy();
-	delete rectMesh;
-	delete rhombusMesh;
 
 	delete wallTex;
 	delete faceTex;
 	delete lightTex;
 	delete crateTex;
 
-	delete dirLight;
-	delete ptLight1;
-	delete ptLight2;
-	delete spotLight;
-
 	delete sphereTransform;
 	
 	delete mainCamera;
+
+	for (int i = 0; i < sceneMeshes.size(); ++i) {
+		delete sceneMeshes[i];
+	}
+	sceneMeshes.clear();
+
+	for (int i = 0; i < sceneLights.size(); ++i) {
+		delete sceneLights[i];
+	}
+	sceneLights.clear();
+
+	delete ambientProgram;
+	delete directionalProgram;
+	delete spotProgram;
+	delete pointProgram;
+
+	delete testModel;
 }
+
+void RendererProgram::FixedUpdate(float a_dt)
+{
+	static float m_accumulatedTime = 0.f;
+	static float m_fixedTimeStep = 0.01f;
+
+	m_accumulatedTime += a_dt;
+
+	// Run update until no more extra time between updates left
+	while (m_accumulatedTime >= m_fixedTimeStep) {
+
+		mainCamera->Update(m_fixedTimeStep);
+
+		InputMonitor* input = InputMonitor::GetInstance();
+
+		/// Lighting update
+		for (int i = 0; i < sceneLights.size(); ++i) {
+			// Update spot light position and direction based off camera
+			if (sceneLights[i]->GetType() == SPOT_LIGHT) {
+				PhongLight_Spot* spotLight = (PhongLight_Spot*)sceneLights[i];
+
+				spotLight->SetPos(glm::vec4(mainCamera->GetTransform()->GetPosition(), 1));
+				spotLight->SetSpotDir(glm::vec4(mainCamera->GetTransform()->Forward(), 0));
+			}
+
+			// Orbit point lights
+			if (sceneLights[i]->GetType() == POINT_LIGHT) {
+
+				PhongLight_Point* ptLight = (PhongLight_Point*)sceneLights[i];
+
+				static float orbitRadius = 2.f;
+				static float scale = 0.01f;
+
+				glm::vec4 orbitVec = glm::vec4(cosf(glfwGetTime()), 0.f, sinf(glfwGetTime()), 0.f) * orbitRadius * scale;
+
+				ptLight->SetPos(ptLight->GetPos() + orbitVec);
+			}
+		}
+
+		// Turn flash light on and off
+		if (input->GetKeyDown(GLFW_KEY_X)) {		// Toggle flashlight
+			isFlashLightOn = !isFlashLightOn;
+		}
+
+		m_accumulatedTime -= m_fixedTimeStep;	// Account for time overflow
+	}
+}
+
 
 void RendererProgram::Update(float a_dt)
 {
-	mainCamera->Update(a_dt);
+	FixedUpdate(a_dt);
 
 #pragma region Gizmos
 	aie::Gizmos::clear();									// Refresh gizmos for new frame
@@ -448,66 +464,21 @@ void RendererProgram::Update(float a_dt)
 	}
 
 	// Point lights
-	aie::Gizmos::addSphere(ptLight1->GetPos(), 0.2f, 12, 12, ptLight1->GetAmbient());
-	aie::Gizmos::addSphere(ptLight2->GetPos(), 0.2f, 12, 12, ptLight2->GetAmbient());
+	for (int i = 0; i < sceneLights.size(); ++i) {
+		if (sceneLights[i]->GetType() == POINT_LIGHT) {
+			PhongLight_Point* ptLight = (PhongLight_Point*)sceneLights[i];
 
-	// Spot lights
-	//aie::Gizmos::addSphere(spotLight->GetPos(), 0.2f, 12, 12, spotLight->GetAmbient());
+			glm::vec4 lightColor = ptLight->GetAmbient(); lightColor.w = 0.5f;
+			glm::vec4 radiusColor = ptLight->GetDiffuse(); radiusColor.w = 0.2f;
 
-#ifdef DEBUG	// Debug draw point light radius
-	glm::vec4 light1Color = glm::vec4(ptLight1->GetDiffuse().x, ptLight1->GetDiffuse().y, ptLight1->GetDiffuse().z, 0.25f);
-	aie::Gizmos::addSphere(ptLight1->GetPos(), ptLight1->GetIlluminationRadius(), 12, 12, light1Color);		// Illumination radius
+			aie::Gizmos::addSphere(ptLight->GetPos(), 0.1, 12, 12, radiusColor);									// Light
+			#ifdef DEBUG
+			aie::Gizmos::addSphere(ptLight->GetPos(), ptLight->GetIlluminationRadius(), 12, 12, radiusColor);		// Illumination radius
+			#endif
+		}
+	}
 
-	glm::vec4 light2Color = glm::vec4(ptLight2->GetDiffuse().x, ptLight2->GetDiffuse().y, ptLight2->GetDiffuse().z, 0.25f);
-	aie::Gizmos::addSphere(ptLight2->GetPos(), ptLight2->GetIlluminationRadius(), 12, 12, light2Color);		// Illumination radius
-#endif
 #pragma endregion Gizmo creation
-
-	/// Lighting update
-	// Update spot light position and direction based off camera
-	spotLight->SetPos(glm::vec4(mainCamera->GetTransform()->GetPosition(), 1));
-	spotLight->SetSpotDir(glm::vec4(mainCamera->GetTransform()->Forward(), 0));
-
-	if (ORBIT_LIGHT) {
-		// Update orbit position of light
-		static float orbitRadius = 10.f;
-		static float orbitHeight = 2.f;
-
-		glm::vec3 orbitPos = glm::vec3(cosf(glfwGetTime()) * orbitRadius, orbitHeight, sinf(glfwGetTime()) * orbitRadius); 	// Get point on orbit circumference based off current angle
-
-		//lightRepMesh->GetTransform()->SetPosition(orbitPos);
-		ptLight2->SetPos(glm::vec4(orbitPos, 1));
-
-		/// Input
-		InputMonitor* input = InputMonitor::GetInstance();
-		float movementSpeed = 10.f;
-
-		if (input->GetKeyDown(GLFW_KEY_SPACE)) {		// Move light up
-			orbitHeight += movementSpeed * a_dt;
-		}
-		if (input->GetKeyDown(GLFW_KEY_LEFT_SHIFT)) {	// Move light down
-			orbitHeight -= movementSpeed * a_dt;
-		}
-		if (input->GetKeyDown(GLFW_KEY_DOWN)) {			// Move light out
-			orbitRadius += movementSpeed * a_dt;
-		}
-		if (input->GetKeyDown(GLFW_KEY_UP)) {			// Move light in
-			orbitRadius -= movementSpeed * a_dt;
-		}
-	}
-
-	// Update light information on materials
-	glm::vec4 newLightPos = ptLight2->GetPos();//glm::vec4(lightRepMesh->GetTransform()->GetPosition(), 1);//(mainCamera->GetTransform()->GetPosition(), 1);
-
-	for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
-		//cubeMeshes[i]->GetTransform()->SetRotation(glm::vec3(float(glfwGetTime()), float(glfwGetTime()), float(glfwGetTime())));
-		cubeMeshes[i]->GetMaterial()->SetVec4("pointLights[1].position", newLightPos);
-
-		cubeMeshes[i]->GetMaterial()->SetVec4("spotLight.position", spotLight->GetPos());
-		cubeMeshes[i]->GetMaterial()->SetVec4("spotLight.spotDir", spotLight->GetSpotDir());
-	}
-
-	//rectMesh->GetMaterial()->SetVec4("lightPos", newLightPos);
 }
 
 void RendererProgram::Render()
@@ -515,21 +486,14 @@ void RendererProgram::Render()
 	//aie::Gizmos::draw(projectionMatrix * viewMatrix);
 	aie::Gizmos::draw(mainCamera->CalculateProjectionView());
 
+	ShaderWrapper* flashLight = (isFlashLightOn ? spotProgram : nullptr);	// Ignore spot light program pass if flash light isn't on
+
 	if (WRAPPED_OGL_OTHER) {
-		//triMesh->GetMaterial()->SetVec4("overrideColor", glm::vec4(0, 1.f, 1.f, 1.f));		// If meshes share the same material, then modifying variables in one material will apply to all
-		static float offset = 0.5f;
-		//rectMesh->GetMaterial()->SetFloat("yOffset", offset);
-
-		//rectMesh->Draw(mainCamera);
-		//rhombusMesh->Draw(mainCamera);
-		
-		//lightRepMesh->Draw(mainCamera);
-
-		for (int i = 0; i < DEFAULT_CUBE_NUM; ++i) {
-			cubeMeshes[i]->Draw(mainCamera);
+		for (int i = 0; i < sceneMeshes.size(); ++i) {
+			sceneMeshes[i]->Draw(mainCamera, sceneLights, globalAmbient, ambientProgram, directionalProgram, pointProgram, flashLight);
 		}
 
-		offset -= 0.001f;
+		testModel->Draw(mainCamera, sceneLights, globalAmbient, ambientProgram, directionalProgram, nullptr, nullptr);
 	}
 	else {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// Renderer shape hint, number of vertices to draw, offset in indice buffer

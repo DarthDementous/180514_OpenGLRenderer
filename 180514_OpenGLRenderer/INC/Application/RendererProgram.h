@@ -5,12 +5,12 @@
 #include <vector>
 
 class Mesh;
+class Model;
 class RenderCamera;
 class Transform;
 class TextureWrapper;
-class PhongLight_Dir;
-class PhongLight_Point;
-class PhongLight_Spot;
+class PhongLight;
+class ShaderWrapper;
 
 class RendererProgram : public Program {
 public:
@@ -23,6 +23,8 @@ protected:
 	virtual void Update(float a_dt);
 	virtual void Render();
 private:
+	void FixedUpdate(float a_dt);
+
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
@@ -30,10 +32,9 @@ private:
 
 	Transform* sphereTransform;
 
-	Mesh* rectMesh;
-	Mesh* rhombusMesh;
-	Mesh* lightRepMesh;
-	std::vector<Mesh*> cubeMeshes;
+	std::vector<Mesh*> sceneMeshes;
+
+	Model* testModel;
 
 	TextureWrapper* wallTex;
 	TextureWrapper* faceTex;
@@ -41,8 +42,16 @@ private:
 	TextureWrapper*	crateTex;
 	TextureWrapper* crateSpecularTex;
 
-	PhongLight_Dir*		dirLight;
-	PhongLight_Point*	ptLight1;
-	PhongLight_Point*	ptLight2;
-	PhongLight_Spot*	spotLight;
+	/// Forward rendering
+	glm::vec4 globalAmbient = glm::vec4(1.f);
+
+	// Shader programs for respective light type calculations
+	ShaderWrapper* ambientProgram;
+	ShaderWrapper* directionalProgram;
+	ShaderWrapper* pointProgram;
+	ShaderWrapper* spotProgram;
+
+	std::vector<PhongLight*> sceneLights;
+
+	bool isFlashLightOn = true;
 };

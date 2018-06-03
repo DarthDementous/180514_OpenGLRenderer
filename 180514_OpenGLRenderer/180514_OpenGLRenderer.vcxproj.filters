@@ -42,9 +42,6 @@
     <ClCompile Include="SRC\Rendering\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\Rendering\Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,11 +63,14 @@
     <ClCompile Include="SRC\Rendering\Light\PhongLight_Spot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SRC\Rendering\ShaderWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\Rendering\Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INC\Rendering\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -116,6 +116,12 @@
     <ClInclude Include="INC\Rendering\Light\PhongLight_Spot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Rendering\ShaderWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Rendering\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BUILD\shaders\base.vert" />
@@ -123,5 +129,13 @@
     <None Include="BUILD\shaders\base.frag" />
     <None Include="BUILD\shaders\base_lit_fixed.frag" />
     <None Include="BUILD\shaders\base_lit_color.frag" />
+    <None Include="BUILD\shaders\forward_ambient.vert" />
+    <None Include="BUILD\shaders\forward_ambient.frag" />
+    <None Include="BUILD\shaders\forward_directional.vert" />
+    <None Include="BUILD\shaders\forward_directional.frag" />
+    <None Include="BUILD\shaders\forward_point.vert" />
+    <None Include="BUILD\shaders\forward_point.frag" />
+    <None Include="BUILD\shaders\forward_spot.vert" />
+    <None Include="BUILD\shaders\forward_spot.frag" />
   </ItemGroup>
 </Project>

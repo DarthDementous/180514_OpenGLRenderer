@@ -6,10 +6,11 @@ class Transform;
 
 class RenderCamera {
 public:
-	RenderCamera(float a_maxSpeed = 20, float a_maxRotSpeed = 15);
+	RenderCamera(float a_maxSpeed = 10, float a_maxRotSpeed = 5);
 	~RenderCamera();
 
 	void Update(float a_dt);
+
 	void SetProjection(float a_fov, float a_aspectRatio, float a_near, float a_far);
 
 	glm::mat4 CalculateProjectionView();
