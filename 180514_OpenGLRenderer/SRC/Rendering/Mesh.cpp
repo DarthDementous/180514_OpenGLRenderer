@@ -59,6 +59,7 @@ Transform * Mesh::GetTransform()
 /**
 *	@brief Visually render mesh based on its vertices, transform, and render camera and lights.
 *	NOTE: If a light shader is set to nullptr then that pass will not be performed.
+*	O(L) complexity where L = number of lights
 *	@param a_camera is the camera to render to.
 *	@param a_lights is the vector of lights to take lighting information from.
 *	@param a_globalAmbient is the global ambience to take into account when performing the ambient lighting pass.

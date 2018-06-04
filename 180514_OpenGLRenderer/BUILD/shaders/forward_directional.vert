@@ -19,6 +19,6 @@ void main() {
 	
 	// Output
 	vertTexCoord = a_texCoord;
-	vertNormal	 = a_normal;
+	vertNormal	 = mat4(transpose(inverse(modelTransform))) * a_normal;			// Rotate normals according to model transform
 	fragPos		 = modelTransform * a_pos;
 }

@@ -18,7 +18,7 @@ struct Material {
 	Material(const glm::vec4& a_ambient = glm::vec4(1.f), 
 		const glm::vec4& a_diffuse = glm::vec4(1.f), 
 		const glm::vec4& a_specular = glm::vec4(1.f), 
-		float a_shininess = 1.f, TextureWrapper* a_diffuseMap = nullptr, TextureWrapper* a_specularMap = nullptr) {
+		float a_shininess = 32.f, TextureWrapper* a_diffuseMap = nullptr, TextureWrapper* a_specularMap = nullptr) {
 
 		ambientColor	= a_ambient;
 		diffuseColor	= a_diffuse;

@@ -49,43 +49,31 @@ int RendererProgram::Startup()
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
 
 	/// Light initialisation
-	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(255.f / 255, 215.f / 255, 0.f, 0.5f) * 0.25f, glm::vec4(255.f / 255, 215.f / 255, 0.f, 0.1f), DEFAULT_LIGHT_DIR));	// Gold specular highlights
-	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(0.4f, 0.f, 0.f, 1.f), glm::vec4(0.5f), glm::vec4(1, 0, 0, 0)));
+	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), DEFAULT_LIGHT_DIR));
+	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(0.4f, 0.f, 0.f, 1.f), glm::vec4(0.5f), glm::vec4(1, 0, 0, 0)));
 
-	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.8f, 0.f, 0.f, 1.f), glm::vec4(1.f), 
-		DEFAULT_LIGHT_POS1, 20.f, DEFAULT_MIN_ILLUMINATION));
-	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f, 0.8f, 0.f, 1.f), glm::vec4(1.f), 
-		DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION));
+	/*sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.8f, 0.f, 0.f, 1.f), glm::vec4(1.f), 
+		DEFAULT_LIGHT_POS1, 20.f, DEFAULT_MIN_ILLUMINATION));*/
+	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f, 0.8f, 0.f, 1.f), glm::vec4(1.f), 
+	//	DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION));
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0.f, 12.5f, 4.f, 1.f), 200.f, DEFAULT_MIN_ILLUMINATION));
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(4.f, 12.5f, 4.f, 1.f), 10.f, DEFAULT_MIN_ILLUMINATION));
 
-	sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.05f), glm::vec4(1.f), glm::vec4(1.f), 
+
+	sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), 
 		glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f));
 
 	/// Texture initialisation
 	if (WRAPPED_OGL_TEX) {
-		faceTex = new TextureWrapper("./textures/awesomeface.png", "texture_diffuse");
-		faceTex->EnableFiltering();
-		faceTex->EnableMipmapping();
-		faceTex->EnableWrapping();
+		faceTex = new TextureWrapper("./textures/awesomeface.png", "texture_diffuse", FILTERING_MIPMAP);
 
-		wallTex = new TextureWrapper("./textures/wall.jpg", "texture_diffuse");
-		wallTex->EnableFiltering();
-		wallTex->EnableMipmapping();
-		wallTex->EnableWrapping();
+		wallTex = new TextureWrapper("./textures/wall.jpg", "texture_diffuse", FILTERING_MIPMAP);
 
-		lightTex = new TextureWrapper("./textures/light.jpg", "texture_diffuse");
-		lightTex->EnableFiltering();
-		lightTex->EnableMipmapping();
-		lightTex->EnableWrapping();
+		lightTex = new TextureWrapper("./textures/light.jpg", "texture_diffuse", FILTERING_MIPMAP);
 
-		crateTex = new TextureWrapper("./textures/container2.png", "texture_diffuse");
-		crateTex->EnableFiltering();
-		crateTex->EnableMipmapping();
-		crateTex->EnableWrapping();
+		crateTex = new TextureWrapper("./textures/container2.png", "texture_diffuse", FILTERING_MIPMAP);
 
-		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", "texture_specular");
-		crateSpecularTex->EnableFiltering();
-		crateSpecularTex->EnableMipmapping();
-		crateSpecularTex->EnableWrapping();
+		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", "texture_specular", FILTERING_MIPMAP);
 	}
 	else {
 		// Load wall texture data into char array
@@ -164,7 +152,7 @@ int RendererProgram::Startup()
 		crateMat.ambientColor = glm::vec4(1);
 		crateMat.diffuseColor = glm::vec4(1);
 		crateMat.specular = glm::vec4(1);
-		crateMat.shininessCoefficient = 64.f;
+		crateMat.shininessCoefficient = 200.f;
 		crateMat.diffuseMap = crateTex;
 		crateMat.specularMap = crateSpecularTex;
 
@@ -411,11 +399,12 @@ void RendererProgram::FixedUpdate(float a_dt)
 				PhongLight_Point* ptLight = (PhongLight_Point*)sceneLights[i];
 
 				static float orbitRadius = 2.f;
-				static float scale = 0.01f;
+				static float orbitHeight = 10.f;
+				static float scale = 1.f;
 
-				glm::vec4 orbitVec = glm::vec4(cosf(glfwGetTime()), 0.f, sinf(glfwGetTime()), 0.f) * orbitRadius * scale;
+				glm::vec4 orbitVec = glm::vec4(cosf(glfwGetTime()) * orbitRadius * scale, orbitHeight, sinf(glfwGetTime()) * orbitRadius * scale, 0.f);
 
-				ptLight->SetPos(ptLight->GetPos() + orbitVec);
+				//ptLight->SetPos(orbitVec);
 			}
 		}
 
@@ -423,6 +412,11 @@ void RendererProgram::FixedUpdate(float a_dt)
 		if (input->GetKeyDown(GLFW_KEY_X)) {		// Toggle flashlight
 			isFlashLightOn = !isFlashLightOn;
 		}
+
+		// Rotate model
+		static float rotSpeed = 10.f;
+
+		testModel->SetRotation(glm::vec3(0.f, glm::radians(glfwGetTime()) * rotSpeed, 0.f));
 
 		m_accumulatedTime -= m_fixedTimeStep;	// Account for time overflow
 	}
@@ -473,7 +467,8 @@ void RendererProgram::Update(float a_dt)
 
 			aie::Gizmos::addSphere(ptLight->GetPos(), 0.1, 12, 12, radiusColor);									// Light
 			#ifdef DEBUG
-			aie::Gizmos::addSphere(ptLight->GetPos(), ptLight->GetIlluminationRadius(), 12, 12, radiusColor);		// Illumination radius
+			float radiusScale = 0.25f;
+			aie::Gizmos::addSphere(ptLight->GetPos(), ptLight->GetIlluminationRadius() * radiusScale, 12, 12, radiusColor);		// Illumination radius
 			#endif
 		}
 	}
@@ -493,7 +488,7 @@ void RendererProgram::Render()
 			sceneMeshes[i]->Draw(mainCamera, sceneLights, globalAmbient, ambientProgram, directionalProgram, pointProgram, flashLight);
 		}
 
-		testModel->Draw(mainCamera, sceneLights, globalAmbient, ambientProgram, directionalProgram, nullptr, nullptr);
+		testModel->Draw(mainCamera, sceneLights, globalAmbient, ambientProgram, directionalProgram, pointProgram, flashLight);
 	}
 	else {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// Renderer shape hint, number of vertices to draw, offset in indice buffer

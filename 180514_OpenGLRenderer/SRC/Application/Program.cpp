@@ -41,6 +41,9 @@ int Program::Run()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 
+	// Set sample rate to 16 (maximum of 16 neighboring texels)
+	glfwWindowHint(GLFW_SAMPLES, 16);
+
 	/// Launch window
 	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL Renderer", nullptr, nullptr);
 
@@ -73,6 +76,9 @@ int Program::Run()
 	/// Rendering initialisation
 	glClearColor(0.2f, 0.2f, 0.25f, 1);
 	glEnable(GL_DEPTH_TEST);	// Activate the z-buffer to make sure the closest pixels draw in overlap scenarios
+
+	// Enable anti-aliasing at the sample rate set by the window hint
+	glEnable(GL_MULTISAMPLE);
 
 	Startup();
 

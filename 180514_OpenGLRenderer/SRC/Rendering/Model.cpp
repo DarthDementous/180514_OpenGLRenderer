@@ -12,6 +12,9 @@
 
 Model::Model(const char * a_filePath)
 {
+	// Initialize variables
+	m_modelTransform = new Transform();
+
 	LoadModel(a_filePath);
 }
 
@@ -36,18 +39,29 @@ void Model::Draw(RenderCamera * a_camera, std::vector<PhongLight*> a_lights, con
 	}
 }
 
+void Model::SetRotation(const glm::vec3 & a_rot)
+{
+	// Set rotation of model transform
+	m_modelTransform->SetRotation(a_rot);
+
+	// Set rotation of child mesh transforms
+	for (int i = 0; i < m_meshes.size(); ++i) {
+		m_meshes[i]->GetTransform()->SetRotation(a_rot);
+	}
+}
+
 void Model::LoadModel(std::string a_filePath)
 {
 	Assimp::Importer modelImporter;
 
 	// Load model 'scene' from file path (encompassing data for whole model including root node, meshes and materials)
-	const aiScene* modelScene = modelImporter.ReadFile(a_filePath, aiProcess_Triangulate | aiProcess_FlipUVs);		// Model importer will ensure all faces are triangles and that uvs are flipped where necessary
+	const aiScene* modelScene = modelImporter.ReadFile(a_filePath, aiProcess_Triangulate);// | aiProcess_FlipUVs);		// Model importer will ensure all faces are triangles and that uvs are flipped where necessary
 
 	// Error handling
 	try {
 		if (!modelScene || modelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !modelScene->mRootNode) {	// Failed to load model completely or no root node
 			char errorMsg[256];
-			sprintf_s(errorMsg, "ERROR::ASSIMP::%s: %s", modelImporter.GetErrorString(), a_filePath.c_str());
+			sprintf_s(errorMsg, "ERROR::ASSIMP:: %s", modelImporter.GetErrorString());
 
 			throw std::runtime_error(errorMsg);
 		}
@@ -138,11 +152,11 @@ Mesh* Model::ReadMesh(aiMesh * a_mesh, const aiScene * a_modelScene)
 		}
 	}
 
-	// Create struct to store default material information
-	Material defaultMat = Material(glm::vec4(1), glm::vec4(1), glm::vec4(1), 1.f);
-
 	/// Read in textures
-	if (a_mesh->mMaterialIndex >= 0) {	// Mesh contains a material
+	// Create struct to store material information
+	Material materialInfo;
+
+	if (a_mesh->mMaterialIndex >= 0) {	// Mesh contains a material (one material per mesh)
 		aiMaterial* material = a_modelScene->mMaterials[a_mesh->mMaterialIndex];
 
 		// Load diffuse maps and append them onto read textures
@@ -155,12 +169,18 @@ Mesh* Model::ReadMesh(aiMesh * a_mesh, const aiScene * a_modelScene)
 
 		// If diffuse maps and specular maps, assign first one to material
 		//TODO: Find a way to handle forward rendering with multiple diffuse/specular maps per mesh
-		if (diffuseMaps.size() != 0) { defaultMat.diffuseMap = diffuseMaps[0]; }
-		if (specularMaps.size() != 0) { defaultMat.specularMap = specularMaps[0]; }
+		if (diffuseMaps.size() != 0) { materialInfo.diffuseMap = diffuseMaps[0]; }
+		if (specularMaps.size() != 0) { materialInfo.specularMap = specularMaps[0]; }
+
+		// Load additional material data
+		aiColor3D ambientColor; material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor); materialInfo.ambientColor = glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, 1.f);
+		aiColor3D diffuseColor; material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor); materialInfo.diffuseColor = glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, 1.f);
+		aiColor3D specularColor; material->Get(AI_MATKEY_COLOR_SPECULAR, specularColor); materialInfo.specular = glm::vec4(specularColor.r, specularColor.g, specularColor.b, 1.f);
+		float shininess; material->Get(AI_MATKEY_SHININESS, shininess); materialInfo.shininessCoefficient = shininess;
 	}
 
 	// Construct and return mesh object
-	return new Mesh(readVertices, new VertexFormat(readIndices), new Transform(), defaultMat);
+	return new Mesh(readVertices, new VertexFormat(readIndices), new Transform(), materialInfo);
 }
 
 /**
@@ -171,15 +191,15 @@ Mesh* Model::ReadMesh(aiMesh * a_mesh, const aiScene * a_modelScene)
 *	@param a_typeName is the type of texture to set the returned object to.
 *	@return vector of processed textures in the form of created TextureWrappers.
 */
-std::vector<TextureWrapper*> Model::ReadMaterialTextures(aiMaterial * a_meshMaterial, aiTextureType a_textureType, std::string a_typeName)
+std::vector<TextureWrapper*> Model::ReadMaterialTextures(aiMaterial * a_meshMaterial, int a_textureType, std::string a_typeName)
 {
 	std::vector<TextureWrapper*> processedTextures;
 
 	// Process textures of specified type in materials
-	for (unsigned int i = 0; i < a_meshMaterial->GetTextureCount(a_textureType); ++i) {
+	for (unsigned int i = 0; i < a_meshMaterial->GetTextureCount(aiTextureType(a_textureType)); ++i) {
 		
 		// Get texture path from current texture and convert it to standard string
-		aiString str; a_meshMaterial->GetTexture(a_textureType, i, &str);
+		aiString str; a_meshMaterial->GetTexture(aiTextureType(a_textureType), i, &str);
 		std::string fileName = str.C_Str();
 
 		// Check if texture has already been loaded
@@ -195,7 +215,7 @@ std::vector<TextureWrapper*> Model::ReadMaterialTextures(aiMaterial * a_meshMate
 		}
 
 		if (!skipLoad) {
-			TextureWrapper* newTex = new TextureWrapper((m_modelDirectory + '/' + fileName).c_str(), a_typeName);	// Backslash must be appended because directory does not have a trailing backslash
+			TextureWrapper* newTex = new TextureWrapper((m_modelDirectory + '/' + fileName).c_str(), a_typeName, FILTERING_MIPMAP);	// Backslash must be appended because directory does not have a trailing backslash
 
 			processedTextures.push_back(newTex);
 

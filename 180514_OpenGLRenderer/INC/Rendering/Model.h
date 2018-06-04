@@ -9,12 +9,11 @@ class TextureWrapper;
 class RenderCamera;
 class PhongLight;
 class ShaderWrapper;
+class Transform;
 struct aiNode;
 struct aiMesh;
 struct aiScene;
 struct aiMaterial;
-
-enum aiTextureType;
 
 class Model {
 public:
@@ -26,8 +25,12 @@ public:
 		const glm::vec4& a_globalAmbient, ShaderWrapper* a_ambientPass,
 		ShaderWrapper* a_directionalPass, ShaderWrapper* a_pointPass, ShaderWrapper* a_spotPass);
 
+	void SetRotation(const glm::vec3& a_rot);
+
 protected:
 private:
+	Transform * m_modelTransform;						// Global transform for the model, any changes to it apply to all the child meshes' transforms
+
 	std::vector<TextureWrapper*> m_loadedTextures;		// Hold onto loaded textures to avoid creating new ones for the same texture files
 	std::vector<Mesh*> m_meshes;
 
@@ -37,5 +40,5 @@ private:
 	void LoadModel(std::string a_filePath);
 	void RecurReadNode(aiNode* a_node, const aiScene* a_modelScene);
 	Mesh* ReadMesh(aiMesh* a_mesh, const aiScene* a_modelScene);
-	std::vector<TextureWrapper*> ReadMaterialTextures(aiMaterial* a_meshMaterial, aiTextureType a_textureType, std::string a_typeName);
+	std::vector<TextureWrapper*> ReadMaterialTextures(aiMaterial* a_meshMaterial, int a_textureType, std::string a_typeName);
 };

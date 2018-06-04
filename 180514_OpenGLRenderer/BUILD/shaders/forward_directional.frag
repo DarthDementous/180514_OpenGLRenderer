@@ -47,15 +47,17 @@ uniform vec4 viewerPos;
 	@return vec4 containing color information for a fragment lit by a directional light.
 */
 vec4 CalculateDirectionalLighting(GPU_Dir_Light a_lightSource, vec4 a_normal, vec4 a_viewerDir, vec4 a_diffuseSample, vec4 a_specularSample) {
+	vec4 lightDir = normalize(a_lightSource.castDir);
+
 	// Calculate ambient
 	vec4 finalAmbient = a_lightSource.base.ambient * material.ambientColor * a_diffuseSample;
 
 	// Calculate diffuse
-	float	diffuseScale	= max(dot(a_normal, -a_lightSource.castDir), 0.0f);	// How much fragment is impacted by the light based off its direction (fragment -> light source)
+	float	diffuseScale	= max(dot(a_normal, -lightDir), 0.0f);	// How much fragment is impacted by the light based off its direction (fragment -> light source)
 	vec4	finalDiffuse	= a_lightSource.base.diffuse * diffuseScale * material.diffuseColor * a_diffuseSample;
 
 	// Calculate specular
-	vec4	reflectDir		= reflect(a_lightSource.castDir, a_normal);
+	vec4	reflectDir		= reflect(lightDir, a_normal);
 	float	specularScale	= pow(max(dot(a_viewerDir, reflectDir), 0.0), material.shininessCoefficient);	// Like with diffuse, if dot product is negative then viewer cannot see specular
 	vec4	finalSpecular	= a_lightSource.base.specular * specularScale * material.specular * a_specularSample;
 

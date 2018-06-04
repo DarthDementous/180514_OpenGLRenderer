@@ -2,9 +2,14 @@
 
 #include <string>
 
+enum eFilteringOption {
+	FILTERING_MIPMAP,
+	FILTERING_LINEAR
+};
+
 class TextureWrapper {
 public:
-	TextureWrapper(const char* a_filePath, const std::string& a_type);
+	TextureWrapper(const char* a_filePath, const std::string& a_type, eFilteringOption a_filterOption);
 	~TextureWrapper();
 
 	void EnableFiltering();

@@ -11,7 +11,7 @@
 *	@param a_filePath is the path to the texture file, including its extension.
 *	@param a_type is the type of texture that is being loaded in (e.g. TEXTURE_DIFFUSE).
 */
-TextureWrapper::TextureWrapper(const char * a_filePath, const std::string& a_type)
+TextureWrapper::TextureWrapper(const char * a_filePath, const std::string& a_type, eFilteringOption a_filterOption)
 {
 	static char currTexUnit = 0;
 
@@ -79,6 +79,19 @@ TextureWrapper::TextureWrapper(const char * a_filePath, const std::string& a_typ
 		format,				// Format of SOURCE texture
 		GL_UNSIGNED_BYTE,	// Type of data in source texture
 		m_texData);			// Memory location of texture data
+
+	// Set texture attributes
+	//EnableWrapping();
+
+	switch (a_filterOption) {
+	case FILTERING_LINEAR:
+		EnableFiltering();
+		break;
+	case FILTERING_MIPMAP:
+		EnableMipmapping();
+		break;
+	}
+
 }
 
 TextureWrapper::~TextureWrapper()
@@ -97,13 +110,13 @@ void TextureWrapper::EnableFiltering()
 	glBindTexture(GL_TEXTURE_2D, *this);
 
 	// (GL_NEAREST = take color of pixel whose center is closest to texture coord, GL_LINEAR = get average color from neighboring pixels to texture coord)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);			// Filtering mode for scaling down textures
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);			// Filtering mode for scaling down textures
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);			// Filtering mode for scaling up textures (Bilinear)
 }
 
 /**
-*	@brief Generate mip maps and enable downscaling mipmap linear technique on texture.
-*	NOTE: If filtering is going to be enabled then this must be called after or else the downscaling filtering will be overridden.
+*	@brief Generate mip maps and enable downscaling mipmap linear technique and upscale linear filtering on texture.
+*	NOTE: This is enabled as a more intensive but nicer looking option to enabling just linear filtering.
 *	@return void.
 */
 void TextureWrapper::EnableMipmapping()
@@ -112,6 +125,7 @@ void TextureWrapper::EnableMipmapping()
 
 	// NOTE: This technique is for downscaling only, setting a mipmap method to the magnification filter will do nothing and will generate an openGL error
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);		// Interpolate between two closest mipmaps needed for scenario, and then get color from image with linear filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// (Create collection of images from one image at varying degrees of resolution to avoid artifacts when viewing high resolution textures from far away)
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -125,8 +139,8 @@ void TextureWrapper::EnableWrapping()
 {
 	glBindTexture(GL_TEXTURE_2D, *this);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);		// 2D Texture wrap mode on x axis
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);		// 2D Texture wrap mode on y axis
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);		// 2D Texture wrap mode on x axis
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);		// 2D Texture wrap mode on y axis
 }
 
 /**
