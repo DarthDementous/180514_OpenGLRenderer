@@ -46,7 +46,7 @@ void RenderCamera::Update(float a_dt)
 {
 	InputMonitor* input = InputMonitor::GetInstance();
 
-	/// Keyboard input
+	///Keyboard input
 	if (input->GetKeyDown(GLFW_KEY_W)) {		// User wants to move camera FORWARD
 		m_cameraTransform->Translate(m_cameraTransform->Forward() * m_maxMoveSpeed * a_dt);
 	}
@@ -67,8 +67,8 @@ void RenderCamera::Update(float a_dt)
 	glm::vec2 mouseProj = input->GetMouseDeltaXY();
 
 	if (mouseProj.y != 0) {
-		m_currentPitch += mouseProj.y * a_dt * m_maxRotSpeed;
-		m_currentYaw += mouseProj.x * a_dt * m_maxRotSpeed;
+		m_currentPitch	+= mouseProj.y * a_dt * m_maxRotSpeed;
+		m_currentYaw	+= mouseProj.x * a_dt * m_maxRotSpeed;
 
 		// Clamp pitch to avoid gimbal lock
 		m_currentPitch = glm::clamp(m_currentPitch, -70.f, 70.f);
@@ -76,6 +76,7 @@ void RenderCamera::Update(float a_dt)
 		m_cameraTransform->SetRotation(glm::vec3(glm::radians(m_currentPitch), glm::radians(-m_currentYaw), 0));
 
 	}
+
 }
 
 void RenderCamera::SetProjection(float a_fov, float a_aspectRatio, float a_near, float a_far)

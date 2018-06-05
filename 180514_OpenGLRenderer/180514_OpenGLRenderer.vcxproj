@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -70,25 +70,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
@@ -154,6 +154,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SRC\IMGUI\imgui.cpp" />
+    <ClCompile Include="SRC\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="SRC\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="SRC\IMGUI\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="SRC\Rendering\Gizmos.cpp" />
     <ClCompile Include="SRC\Rendering\gl_core_4_4.c" />
     <ClCompile Include="SRC\Application\InputMonitor.cpp" />

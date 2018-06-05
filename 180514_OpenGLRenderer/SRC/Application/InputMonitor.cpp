@@ -28,7 +28,18 @@ bool InputMonitor::GetKeyDown(int a_keyCode)
 	}
 }
 
-glm::vec2 InputMonitor::GetMouseDeltaXY()
+bool InputMonitor::GetMouseButtonDown(int a_mouseButtonCode)
+{
+	// Mouse button is held down
+	if (glfwGetMouseButton(glfwGetCurrentContext(), a_mouseButtonCode)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+glm::vec2 InputMonitor:: GetMouseDeltaXY()
 {
 	glm::tvec2<double> currentCursorPos = glm::vec2();
 	glfwGetCursorPos(glfwGetCurrentContext(), &currentCursorPos.x, &currentCursorPos.y);

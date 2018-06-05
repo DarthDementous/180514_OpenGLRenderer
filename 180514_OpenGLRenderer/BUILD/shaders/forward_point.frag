@@ -81,8 +81,13 @@ vec4 CalculatePointLighting(GPU_Pt_Light a_lightSource, vec4 a_normal, vec4 a_vi
 	vec4	finalDiffuse	= a_lightSource.base.diffuse * diffuseScale * material.diffuseColor * a_diffuseSample;
 
 	// Calculate specular
-	vec4	 reflectDir		= reflect(-dirToLight, a_normal);		// Reflect expects light source -> fragment therefore it must be negated
+	#if 0 /// Phong specular model
+	vec4	reflectDir		= reflect(-dirToLight, a_normal);			// Reflection direction of light after hitting normal 
 	float	specularScale	= pow(max(dot(a_viewerDir, reflectDir), 0.0), material.shininessCoefficient);	// Like with diffuse, if dot product is negative then viewer cannot see specular
+	#else /// Blinn-Phong specular model 
+	vec4	halfwayDir		= normalize(dirToLight + a_viewerDir);		// Direction halfway in between normal and light direction, avoids negative specular scale if view angle is greater than 90 degrees
+	float	specularScale	= pow(max(dot(a_normal, halfwayDir), 0.0), material.shininessCoefficient);
+	#endif
 	vec4	finalSpecular	= a_lightSource.base.specular * specularScale * material.specular * a_specularSample;
 
 	// Use modified light attenuation equation to get illumination scale for fragment, sourced from: https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/

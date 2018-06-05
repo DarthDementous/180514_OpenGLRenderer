@@ -39,15 +39,9 @@ void Model::Draw(RenderCamera * a_camera, std::vector<PhongLight*> a_lights, con
 	}
 }
 
-void Model::SetRotation(const glm::vec3 & a_rot)
+Transform * Model::GetTransform()
 {
-	// Set rotation of model transform
-	m_modelTransform->SetRotation(a_rot);
-
-	// Set rotation of child mesh transforms
-	for (int i = 0; i < m_meshes.size(); ++i) {
-		m_meshes[i]->GetTransform()->SetRotation(a_rot);
-	}
+	return m_modelTransform;
 }
 
 void Model::LoadModel(std::string a_filePath)
@@ -179,8 +173,8 @@ Mesh* Model::ReadMesh(aiMesh * a_mesh, const aiScene * a_modelScene)
 		float shininess; material->Get(AI_MATKEY_SHININESS, shininess); materialInfo.shininessCoefficient = shininess;
 	}
 
-	// Construct and return mesh object
-	return new Mesh(readVertices, new VertexFormat(readIndices), new Transform(), materialInfo);
+	// Construct and return mesh object with transform parented to model (TODO: Allow for mesh to mesh parent child relationships instead of just assigning to model)
+	return new Mesh(readVertices, new VertexFormat(readIndices), new Transform(m_modelTransform), materialInfo);
 }
 
 /**

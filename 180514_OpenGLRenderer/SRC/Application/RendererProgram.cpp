@@ -21,8 +21,9 @@
 #include <fstream>
 #include <string>
 #include <streambuf>
-
+#include <imgui.h>
 #include <stb/stb_image.h>
+#include <gl_core_4_4.h>
 
 RendererProgram::RendererProgram()
 {
@@ -41,7 +42,7 @@ int RendererProgram::Startup()
 	viewMatrix = glm::lookAt(glm::vec3(-10, 10, -10), glm::vec3(0), glm::vec3(0, 1, 0));			// Create view matrix looking at at an arbitrary point
 	projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);			// Define how objects should be drawn
 
-	sphereTransform = new Transform(glm::vec3(0, 2, 8), glm::vec3(3, 3, 3), glm::vec3(glm::radians(90.f), 0, 0));
+	sphereTransform = new Transform(nullptr, glm::vec3(0, 2, 8), glm::vec3(3, 3, 3), glm::vec3(glm::radians(90.f), 0, 0));
 
 	mainCamera = new RenderCamera();
 	mainCamera->SetProjection(glm::radians(45.f), 16 / 9.f, 0.1f, 1000.f);
@@ -49,15 +50,15 @@ int RendererProgram::Startup()
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
 
 	/// Light initialisation
-	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), DEFAULT_LIGHT_DIR));
+	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0, -1, 1, 0)));
 	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(0.4f, 0.f, 0.f, 1.f), glm::vec4(0.5f), glm::vec4(1, 0, 0, 0)));
 
 	/*sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.8f, 0.f, 0.f, 1.f), glm::vec4(1.f), 
 		DEFAULT_LIGHT_POS1, 20.f, DEFAULT_MIN_ILLUMINATION));*/
-	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f, 0.8f, 0.f, 1.f), glm::vec4(1.f), 
-	//	DEFAULT_LIGHT_POS2, 20.f, DEFAULT_MIN_ILLUMINATION));
-	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0.f, 12.5f, 4.f, 1.f), 200.f, DEFAULT_MIN_ILLUMINATION));
-	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(4.f, 12.5f, 4.f, 1.f), 10.f, DEFAULT_MIN_ILLUMINATION));
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f), glm::vec4(1),
+		glm::vec4(0.f, 2.f, 0.f, 1.f), 80.f, DEFAULT_MIN_ILLUMINATION));
+	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0.f, 12.5f, 4.f, 1.f), 200.f, DEFAULT_MIN_ILLUMINATION));
+	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(4.f, 12.5f, 4.f, 1.f), 50.f, DEFAULT_MIN_ILLUMINATION));
 
 
 	sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), 
@@ -74,6 +75,9 @@ int RendererProgram::Startup()
 		crateTex = new TextureWrapper("./textures/container2.png", "texture_diffuse", FILTERING_MIPMAP);
 
 		crateSpecularTex = new TextureWrapper("./textures/container2_specular.png", "texture_specular", FILTERING_MIPMAP);
+
+		floorTex = new TextureWrapper("./textures/wood_floor.jpg", "texture_diffuse", FILTERING_MIPMAP);
+		floorTex->EnableWrapping();
 	}
 	else {
 		// Load wall texture data into char array
@@ -154,17 +158,17 @@ int RendererProgram::Startup()
 		crateMat.specular = glm::vec4(1);
 		crateMat.shininessCoefficient = 200.f;
 		crateMat.diffuseMap = crateTex;
-		crateMat.specularMap = crateSpecularTex;
+		crateMat.specularMap = nullptr;
 
 		Material planeMat;
 		planeMat.ambientColor = glm::vec4(1);
 		planeMat.diffuseColor = glm::vec4(1);
 		planeMat.specular = glm::vec4(1);
-		planeMat.shininessCoefficient = 1.f;
-		planeMat.diffuseMap	= lightTex;
+		planeMat.shininessCoefficient = 32.f;
+		planeMat.diffuseMap	= floorTex;
 
 		/// Mesh initialisation
-		testModel = new Model("./models/nanosuit/nanosuit.obj");
+		testModel = new Model("./models/apple/apple_texturing.obj");
 
 		// Vertex formats
 		VertexFormat* rectFormat = new VertexFormat(std::vector<unsigned int>{
@@ -226,18 +230,17 @@ int RendererProgram::Startup()
 			sceneMeshes[i]->GetTransform()->SetScale(glm::vec3(1));
 		}
 
-		//// Rectangle
+		//// Rectangle (faced up)
 		std::vector<Vertex> rectVerts = {
 			// Positions				// Tex coords		// Vertex normals
-			Vertex(glm::vec4(-0.5f, 0.5f, 0.f, 1.f), glm::vec2(0.f, 1.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Top left
-			Vertex(glm::vec4(0.5f, 0.5f, 0.f, 1.f),	 glm::vec2(1.f, 1.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Top right
-			Vertex(glm::vec4(-0.5f, -0.5f, 0.f, 1.f),glm::vec2(0.f, 0.f), glm::vec4(0.f, 0.f, -1.f, 0.f)),		// Bottom left
-			Vertex(glm::vec4(0.5f, -0.5f, 0.f, 1.f), glm::vec2(1.f, 0.f), glm::vec4(0.f, 0.f, -1.f, 0.f))		// Bottom right
+			Vertex(glm::vec4(-0.5f, 0.0f, 0.5f, 1.f), glm::vec2(0.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f)),		// Bottom left
+			Vertex(glm::vec4(-0.5f, 0.f, -0.5f, 1.f),glm::vec2(0.f, 1.f), glm::vec4(0.f, 1.f, 0.f, 0.f)),		// Top left
+			Vertex(glm::vec4(0.5f, 0.f, 0.5f, 1.f),glm::vec2(1.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f)),			// Bottom right
+			Vertex(glm::vec4(0.5f, 0.f, -0.5f, 1.f), glm::vec2(1.f, 1.f), glm::vec4(0.f, 1.f, 0.f, 0.f))			// Top right
 		};
 
 		Transform* rectTransform = new Transform();
 		rectTransform->SetScale(glm::vec3(10.f));
-		rectTransform->SetRotation(glm::vec3(glm::radians(90.f), 0.f, 0.f));
 		rectTransform->Translate(glm::vec3(0, -2.f, 0));
 
 		sceneMeshes.push_back(new Mesh(rectVerts, rectFormat, rectTransform, planeMat));
@@ -346,6 +349,8 @@ void RendererProgram::Shutdown()
 	delete faceTex;
 	delete lightTex;
 	delete crateTex;
+	delete crateSpecularTex;
+	delete floorTex;
 
 	delete sphereTransform;
 	
@@ -378,10 +383,9 @@ void RendererProgram::FixedUpdate(float a_dt)
 
 	// Run update until no more extra time between updates left
 	while (m_accumulatedTime >= m_fixedTimeStep) {
+		InputMonitor* input = InputMonitor::GetInstance();
 
 		mainCamera->Update(m_fixedTimeStep);
-
-		InputMonitor* input = InputMonitor::GetInstance();
 
 		/// Lighting update
 		for (int i = 0; i < sceneLights.size(); ++i) {
@@ -415,8 +419,7 @@ void RendererProgram::FixedUpdate(float a_dt)
 
 		// Rotate model
 		static float rotSpeed = 10.f;
-
-		testModel->SetRotation(glm::vec3(0.f, glm::radians(glfwGetTime()) * rotSpeed, 0.f));
+		testModel->GetTransform()->SetRotation(glm::vec3(0.f, glm::radians(glfwGetTime()) * rotSpeed, 0.f));
 
 		m_accumulatedTime -= m_fixedTimeStep;	// Account for time overflow
 	}
@@ -426,6 +429,26 @@ void RendererProgram::FixedUpdate(float a_dt)
 void RendererProgram::Update(float a_dt)
 {
 	FixedUpdate(a_dt);
+
+#pragma region IMGUI
+	// Ensure size and position is only set once and ignores whatever is in imgui.cfg
+	ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiSetCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_Once);
+	ImGui::Begin("Graphics Engine Interface");
+
+#pragma region Scene Options
+	/// Point light
+	ImGui::Text("Point Light");
+
+	static float input_shininess = 1.f;
+
+	ImGui::SliderFloat("Material Shininess", &input_shininess, 0.1f, 256.f, "%3.f", 4.f);
+	Mesh* plane = sceneMeshes[0]; plane->GetMaterial().shininessCoefficient = input_shininess;
+#pragma endregion
+
+	ImGui::End();
+#pragma endregion
+
 
 #pragma region Gizmos
 	aie::Gizmos::clear();									// Refresh gizmos for new frame

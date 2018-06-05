@@ -46,7 +46,7 @@ Mesh::~Mesh()
 	delete m_transform;
 }
 
-Material Mesh::GetMaterial()
+Material& Mesh::GetMaterial()
 {
 	return m_material;
 }
@@ -76,7 +76,7 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 	/// Set global rendering data
 	if (a_ambientPass) {
 		//// Ambient pass (only performed once)
-		a_ambientPass->SetMat4("modelTransform", m_transform->GetMatrix());
+		a_ambientPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());		// Ensure vertices are drawn in world coordinates not its local coordinates
 		a_ambientPass->SetMat4("viewTransform", a_camera->CalculateView());
 		a_ambientPass->SetMat4("projectionTransform", a_camera->GetProjection());
 		
@@ -91,7 +91,7 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 
 	if (a_directionalPass) {
 		// Set render transforms
-		a_directionalPass->SetMat4("modelTransform", m_transform->GetMatrix());
+		a_directionalPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());
 		a_directionalPass->SetMat4("viewTransform", a_camera->CalculateView());
 		a_directionalPass->SetMat4("projectionTransform", a_camera->GetProjection());
 
@@ -104,7 +104,7 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 
 	if (a_pointPass) {
 		// Set render transforms
-		a_pointPass->SetMat4("modelTransform", m_transform->GetMatrix());
+		a_pointPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());
 		a_pointPass->SetMat4("viewTransform", a_camera->CalculateView());
 		a_pointPass->SetMat4("projectionTransform", a_camera->GetProjection());
 
@@ -117,7 +117,7 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 
 	if (a_spotPass) {
 		// Set render transforms
-		a_spotPass->SetMat4("modelTransform", m_transform->GetMatrix());
+		a_spotPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());
 		a_spotPass->SetMat4("viewTransform", a_camera->CalculateView());
 		a_spotPass->SetMat4("projectionTransform", a_camera->GetProjection());
 

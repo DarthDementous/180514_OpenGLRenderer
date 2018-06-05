@@ -1,7 +1,8 @@
 #include "Transform.h"
 #include <glm/ext.hpp>
 
-Transform::Transform(const glm::vec3& a_pos, const glm::vec3& a_scale, const glm::vec3& a_rot) : m_position(a_pos), m_scale(a_scale), m_rotation(a_rot)
+Transform::Transform(Transform* a_parentTransform, const glm::vec3& a_pos, const glm::vec3& a_scale, const glm::vec3& a_rot) :
+	m_position(a_pos), m_scale(a_scale), m_rotation(a_rot), m_parentTransform(a_parentTransform)
 {
 	/// Variable initialisation
 	ReconstructMatrix();
@@ -52,6 +53,32 @@ const glm::mat4 & Transform::GetMatrix()
 	return m_transformMatrix;
 }
 
+/**
+*	@brief Recursively travel through the current transform's parents to determine its global transform matrix.
+*	@return Calculated global transform matrix.
+*/
+const glm::mat4 & Transform::RecurCalculateGlobalMatrix()
+{
+	if (m_parentTransform == nullptr) {		// No parent found, return regular transform matrix
+		return m_transformMatrix;
+	}
+
+	return m_parentTransform->RecurCalculateGlobalMatrix() * m_transformMatrix;		// Calculate global matrix of current transform by timesing its parent's global matrix by its own local transform
+}
+
+/**
+*	@brief Calculate and return global transform matrix.
+*	@return Global transform matrix for this transform.
+**/
+const glm::mat4 Transform::GetGlobalMatrix()
+{
+	if (m_parentTransform == nullptr) {		// No parent found, return local transform
+		return m_transformMatrix;
+	}
+
+	return m_parentTransform->RecurCalculateGlobalMatrix() * m_transformMatrix;		// Global matrix = global matrix of parent * local matrix
+}
+
 glm::vec3 Transform::Forward()
 {
 	return m_forward;
@@ -82,9 +109,11 @@ void Transform::Translate(const glm::vec3 & a_vec)
 void Transform::ReconstructMatrix() {
 	// Reconstruct transform matrix in order of scale, rotate, translate to avoid skewing
 	m_transformMatrix = glm::translate(m_position) * 
-		//glm::rotate(m_rotation.x, glm::vec3(1, 0, 0)) * glm::rotate(m_rotation.y, glm::vec3(0, 1, 0)) * glm::rotate(m_rotation.z, glm::vec3(0, 0, 1)) *
 		glm::mat4_cast(glm::quat(m_rotation)) *		// Convert from quat to mat in order to be compatable in composition operation
 		glm::scale(m_scale);
+
+	// Apply parent transformation if transform has parent
+	if (m_parentTransform) { m_transformMatrix = m_parentTransform->RecurCalculateGlobalMatrix() * m_transformMatrix; };
 
 	/// Store transform matrix axis directions
 	m_forward	= glm::vec3(m_transformMatrix[2][0], m_transformMatrix[2][1], m_transformMatrix[2][2]);

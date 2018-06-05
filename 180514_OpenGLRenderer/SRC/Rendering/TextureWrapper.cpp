@@ -56,7 +56,7 @@ TextureWrapper::TextureWrapper(const char * a_filePath, const std::string& a_typ
 
 	// Hold onto assigned texture unit
 	m_textureUnit = currTexUnit;
-	currTexUnit++;		// Increment to next texture unit for the next texture wrapper object
+	currTexUnit++;			// Increment to next texture unit for the next texture wrapper object
 
 	// Activate corresponding texture unit so that binding the texture sets it to that texture unit address
 	glActiveTexture(GetTexUnitEnum());

@@ -63,7 +63,7 @@ public:
 		Material a_material = Material());		// Set default material values if not defined in constructor
 	~Mesh();
 
-	Material GetMaterial();
+	Material& GetMaterial();
 	Transform* GetTransform();
 	std::vector<Vertex> GetVerticeData() { return m_rawVerticeData; }
 
@@ -86,5 +86,6 @@ private:
 
 	std::vector<Vertex> m_rawVerticeData;	// Keep track of vertex data so memory isn't freed until Mesh is deleted
 
+	Transform* m_parentTransform;	// Hold onto parent transform so that changes made to it will apply to all of its child meshes
 	Transform* m_transform;			// Transform information in global space
 };

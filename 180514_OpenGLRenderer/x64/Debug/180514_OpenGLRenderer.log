@@ -1,4 +1,2 @@
-﻿  RendererProgram.cpp
-c:\users\s171671\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(405): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\s171671\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(468): warning C4305: 'argument': truncation from 'double' to 'float'
+﻿  InputMonitor.cpp
   180514_OpenGLRenderer.vcxproj -> C:\Users\s171671\Documents\Repositories\180514_OpenGLRenderer\180514_OpenGLRenderer\BUILD\RendererProgram_Debug_x64.exe

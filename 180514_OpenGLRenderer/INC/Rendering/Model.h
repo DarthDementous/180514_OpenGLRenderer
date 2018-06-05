@@ -25,8 +25,8 @@ public:
 		const glm::vec4& a_globalAmbient, ShaderWrapper* a_ambientPass,
 		ShaderWrapper* a_directionalPass, ShaderWrapper* a_pointPass, ShaderWrapper* a_spotPass);
 
-	void SetRotation(const glm::vec3& a_rot);
-
+	//void SetRotation(const glm::vec3& a_rot);
+	Transform* GetTransform();
 protected:
 private:
 	Transform * m_modelTransform;						// Global transform for the model, any changes to it apply to all the child meshes' transforms

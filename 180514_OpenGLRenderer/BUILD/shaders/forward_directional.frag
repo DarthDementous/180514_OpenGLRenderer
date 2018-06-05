@@ -57,8 +57,13 @@ vec4 CalculateDirectionalLighting(GPU_Dir_Light a_lightSource, vec4 a_normal, ve
 	vec4	finalDiffuse	= a_lightSource.base.diffuse * diffuseScale * material.diffuseColor * a_diffuseSample;
 
 	// Calculate specular
-	vec4	reflectDir		= reflect(lightDir, a_normal);
+	#if 1 /// Phong specular model
+	vec4	reflectDir		= reflect(lightDir, a_normal);			// Reflection direction of light after hitting normal 
 	float	specularScale	= pow(max(dot(a_viewerDir, reflectDir), 0.0), material.shininessCoefficient);	// Like with diffuse, if dot product is negative then viewer cannot see specular
+	#else /// Blinn-Phong specular model 
+	vec4	halfwayDir		= normalize(-lightDir + a_viewerDir);	// Direction halfway in between normal and light direction, avoids negative specular scale if view angle is greater than 90 degrees
+	float	specularScale	= pow(max(dot(a_normal, halfwayDir), 0.0), material.shininessCoefficient);
+	#endif
 	vec4	finalSpecular	= a_lightSource.base.specular * specularScale * material.specular * a_specularSample;
 
 	// Calculate and return final fragment color after applying directional phong lighting

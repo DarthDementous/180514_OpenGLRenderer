@@ -3,7 +3,10 @@
 #include "Renderer_Utility_Funcs.h"
 
 #include <GLFW/glfw3.h>
+#include <gl_core_4_4.h>
 #include <iostream>
+#include <imgui.h>
+#include <imgui_impl_glfw_gl3.h>
 
 Program::Program()
 {
@@ -30,10 +33,10 @@ void Program::Render()
 {
 }
 
-int Program::Run()
+GLFWwindow* Program::InitialiseWindow(const char* a_windowName, int a_width, int a_height)
 {
 	if (glfwInit() == false) {		// Failed to initialise
-		return EXIT_FAILURE;
+		return nullptr;
 	}
 
 #ifdef DEBUG
@@ -44,8 +47,23 @@ int Program::Run()
 	// Set sample rate to 16 (maximum of 16 neighboring texels)
 	glfwWindowHint(GLFW_SAMPLES, 16);
 
+	// Create window
+	GLFWwindow* window = glfwCreateWindow(a_width, a_height, a_windowName, nullptr, nullptr);
+
+	return window;
+}
+
+void Program::DestroyContextWindow()
+{
+	// Clean up glfw window and loaded glfw data
+	glfwDestroyWindow(glfwGetCurrentContext());
+	glfwTerminate();
+}
+
+int Program::Run(const char* a_windowName, int a_width, int a_height)
+{
 	/// Launch window
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL Renderer", nullptr, nullptr);
+	GLFWwindow* window = InitialiseWindow(a_windowName, 1280, 720);
 
 	if (!window) {					// Failed to create window
 		glfwTerminate();
@@ -54,10 +72,20 @@ int Program::Run()
 
 	glfwMakeContextCurrent(window);
 
+	/// Initialise IMGUI
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	
+	ImGui_ImplGlfwGL3_Init(window, true);
+
+	// Style
+	ImGui::StyleColorsDark();
+
 	/// Initialise openGL functions to correct version
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {	// Failed to load version-specific openGL functions
-		glfwDestroyWindow(window);
-		glfwTerminate();
+		DestroyContextWindow();
 		return OPENGL_LOAD_FAIL;
 	}
 
@@ -91,7 +119,8 @@ int Program::Run()
 	while (glfwWindowShouldClose(window) == false && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS) {		// Window has not been closed and escape key has not been pressed
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Wipe back buffers and clear z-buffer to indicate we're rendering a new frame
 
-		glfwPollEvents();			// Record input for this frame
+		glfwPollEvents();				// Record input for this frame
+		ImGui_ImplGlfwGL3_NewFrame();	// Clear IMGUI for new frame
 
 		// Calculate time between frames
 		currFrameTime	= glfwGetTime();
@@ -101,12 +130,19 @@ int Program::Run()
 		Update((float)deltaTime);
 
 		Render();
+
+		ImGui::Render();
+		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers(window);	// Back buffer has received draw information from Render, swap with front buffer to display new graphics for this frame
 	}
 
+	// Clean up IMGUI
+	ImGui_ImplGlfwGL3_Shutdown();
+	ImGui::DestroyContext();
+
 	Shutdown();
 
-	glfwDestroyWindow(window);
-	glfwTerminate();				// Close down openGL systems and free memory
+	DestroyContextWindow();
 	return EXIT_SUCCESS;
 }

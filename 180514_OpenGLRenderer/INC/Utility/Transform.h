@@ -5,7 +5,7 @@
 
 class Transform {
 public:
-	Transform(const glm::vec3& a_pos = glm::vec3(0), const glm::vec3& a_scale = glm::vec3(1), const glm::vec3& a_rot = glm::vec3(0));
+	Transform(Transform* a_parentTransform = nullptr, const glm::vec3& a_pos = glm::vec3(0), const glm::vec3& a_scale = glm::vec3(1), const glm::vec3& a_rot = glm::vec3(0));
 	~Transform();
 
 	const glm::vec3& GetPosition();
@@ -18,6 +18,7 @@ public:
 	void SetRotation(const glm::vec3& a_rotation);
 
 	const glm::mat4& GetMatrix();
+	const glm::mat4 GetGlobalMatrix();
 
 	glm::vec3 Forward();
 	glm::vec3 Up();
@@ -27,6 +28,7 @@ public:
 protected:
 private:
 	void ReconstructMatrix();
+	const glm::mat4& RecurCalculateGlobalMatrix();
 
 	// Cached values (avoids decomposition)
 	glm::vec3 m_position;
@@ -38,4 +40,6 @@ private:
 	glm::vec3 m_left;
 
 	glm::mat4 m_transformMatrix;		// Final constructed matrix with position, rotation and scale information
+
+	Transform* m_parentTransform;		// Hold onto parent to ensure that all transformations applied to the parent are also applied to the children
 };
