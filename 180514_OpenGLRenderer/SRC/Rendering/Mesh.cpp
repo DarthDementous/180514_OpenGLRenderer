@@ -9,6 +9,7 @@
 #include "Light\PhongLight_Spot.h"
 
 #include <gl_core_4_4.h>
+#include <imgui.h>
 
 Mesh::Mesh(const std::vector<Vertex>& a_verts, VertexFormat* a_format, Transform* a_transform, Material a_material)
 {
@@ -72,10 +73,23 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 	ShaderWrapper* a_directionalPass, ShaderWrapper* a_pointPass, ShaderWrapper* a_spotPass)
 {
 	assert(a_camera && "ERROR::MESH::NULL_CAMERA");
+
+#if DEBUG	IMGUI Parameter modifiers
+	ImGui::Begin("Mesh Render Parameter Modifier");
+
+	ImGui::Text("Apply Gamma Correction");
+	static bool in_correctGamma = false; ImGui::Checkbox("Gamma Correction", &in_correctGamma);
+
+	ImGui::End();
+#endif
 	
 	/// Set global rendering data
 	if (a_ambientPass) {
 		//// Ambient pass (only performed once)
+#if DEBUG	Shader test parameters
+		a_ambientPass->SetBool("correctGamma", in_correctGamma);
+#endif
+
 		a_ambientPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());		// Ensure vertices are drawn in world coordinates not its local coordinates
 		a_ambientPass->SetMat4("viewTransform", a_camera->CalculateView());
 		a_ambientPass->SetMat4("projectionTransform", a_camera->GetProjection());
@@ -103,6 +117,10 @@ void Mesh::Draw(RenderCamera* a_camera, std::vector<PhongLight*> a_lights,
 	}
 
 	if (a_pointPass) {
+#if DEBUG	Shader test parameters
+		a_pointPass->SetBool("correctGamma", in_correctGamma);
+#endif
+
 		// Set render transforms
 		a_pointPass->SetMat4("modelTransform", m_transform->GetGlobalMatrix());
 		a_pointPass->SetMat4("viewTransform", a_camera->CalculateView());

@@ -195,21 +195,24 @@
     <ClInclude Include="INC\Rendering\ShaderWrapper.h" />
     <ClInclude Include="INC\Utility\Transform.h" />
     <ClInclude Include="INC\Rendering\VertexFormat.h" />
+    <ClInclude Include="INC\Utility\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BUILD\shaders\base.vert" />
-    <None Include="BUILD\shaders\base_lit_color.frag" />
-    <None Include="BUILD\shaders\base_lit_fixed.frag" />
-    <None Include="BUILD\shaders\base_mix.frag" />
-    <None Include="BUILD\shaders\base.frag" />
-    <None Include="BUILD\shaders\forward_ambient.frag" />
-    <None Include="BUILD\shaders\forward_ambient.vert" />
-    <None Include="BUILD\shaders\forward_directional.frag" />
-    <None Include="BUILD\shaders\forward_directional.vert" />
-    <None Include="BUILD\shaders\forward_point.frag" />
-    <None Include="BUILD\shaders\forward_point.vert" />
-    <None Include="BUILD\shaders\forward_spot.frag" />
-    <None Include="BUILD\shaders\forward_spot.vert" />
+    <None Include="BUILD\shaders\old\base.vert" />
+    <None Include="BUILD\shaders\old\base_lit_color.frag" />
+    <None Include="BUILD\shaders\old\base_lit_fixed.frag" />
+    <None Include="BUILD\shaders\old\base_mix.frag" />
+    <None Include="BUILD\shaders\old\base.frag" />
+    <None Include="BUILD\shaders\phong\forward_ambient.frag" />
+    <None Include="BUILD\shaders\phong\forward_ambient.vert" />
+    <None Include="BUILD\shaders\phong\forward_directional.frag" />
+    <None Include="BUILD\shaders\phong\forward_directional.vert" />
+    <None Include="BUILD\shaders\phong\forward_point.frag" />
+    <None Include="BUILD\shaders\phong\forward_point.vert" />
+    <None Include="BUILD\shaders\phong\forward_spot.frag" />
+    <None Include="BUILD\shaders\phong\forward_spot.vert" />
+    <None Include="BUILD\shaders\post\post_gamma.frag" />
+    <None Include="BUILD\shaders\post\post_base.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

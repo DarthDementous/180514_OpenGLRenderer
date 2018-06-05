@@ -15,6 +15,9 @@ public:
 	float GetMinIllumination();
 
 	void SetPos(const glm::vec4& a_pos);
+
+	// IMGUI getters and setters
+	void SetIlluminationRadius(float a_range) { m_illuminationRadius = a_range; }
 protected:
 private:
 	glm::vec4 m_pos;

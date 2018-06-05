@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Vertex.h"
+
 #include <vector>
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
@@ -41,19 +43,6 @@ struct Material {
 	TextureWrapper* specularMap = nullptr;
 };
 
-// Holds onto data contained within the vertex for readable usage with openGL code
-struct Vertex {
-	Vertex(const glm::vec4& a_pos, const glm::vec2& a_coord, const glm::vec4& a_normal) {
-		pos			= a_pos;
-		texCoord	= a_coord;
-		normal		= a_normal;
-	}
-
-	glm::vec4 pos;
-	glm::vec2 texCoord;
-	glm::vec4 normal;
-};
-
 #pragma endregion 
 
 class Mesh {
@@ -82,7 +71,7 @@ private:
 
 	Material m_material;
 
-	VertexFormat*	m_vertFormat;			// How vertex data is interpreted
+	VertexFormat* m_vertFormat;			// How vertex data is interpreted
 
 	std::vector<Vertex> m_rawVerticeData;	// Keep track of vertex data so memory isn't freed until Mesh is deleted
 

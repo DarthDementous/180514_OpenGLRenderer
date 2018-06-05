@@ -44,7 +44,7 @@ private:
 	TextureWrapper* floorTex;
 
 	/// Forward rendering
-	glm::vec4 globalAmbient = glm::vec4(0.2, 0.2, 0.2, 1.f);
+	glm::vec4 globalAmbient = glm::vec4(0.01, 0.01, 0.01, 1.f);
 
 	// Shader programs for respective light type calculations
 	ShaderWrapper* ambientProgram;

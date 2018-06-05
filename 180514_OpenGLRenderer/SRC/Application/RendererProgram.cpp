@@ -24,6 +24,7 @@
 #include <imgui.h>
 #include <stb/stb_image.h>
 #include <gl_core_4_4.h>
+#include <algorithm>
 
 RendererProgram::RendererProgram()
 {
@@ -49,20 +50,80 @@ int RendererProgram::Startup()
 	mainCamera->GetTransform()->SetPosition(glm::vec3(0, 5, -5));
 	mainCamera->GetTransform()->SetRotation(glm::vec3(glm::radians(20.f), 0, 0));
 
+#pragma region Post-processing test
+	GLuint frameBufferID; glGenFramebuffers(1, &frameBufferID);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);	// Allow future read and write frame buffer operations to affect this buffer
+	// glBindFramebuffer(GL_READ_FRAMEBUFFER)			// Incorporated only in read functions like glReadPixels
+	// glBindFramebuffer(GL_DRAW_FRAMEBUFFER)			// Destination for rendering, clearing and other write operations
+
+	/// Texture attachment
+	GLuint renderTextureID; glGenTextures(1, &renderTextureID);
+
+	glBindTexture(GL_TEXTURE_2D, renderTextureID);
+	
+	// Set render texture data: dimensions equal to viewport dimensions, null data (because it is being read into by the custom frame buffer)
+	GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport); int screenWidth = viewport[2], screenHeight = viewport[3];
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	// NOTE: In most cases, only a linear filter is necessary to consider for a render texture's parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Attach render texture to active frame buffer
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER,				// Frame buffer target 
+		GL_COLOR_ATTACHMENT0,		// Type of attachment (can be multiple)
+		GL_TEXTURE_2D,				// Type of texture being attached
+		renderTextureID,				// Texture ID
+		0);							// Mipmap level (kept at 0 because not being used) 
+
+	/// Render buffer
+	GLuint renderBufferID; glGenRenderbuffers(1, &renderBufferID);					// Create render buffer to be able to store depth data along with color of previous render texture
+
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferID);
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH, screenWidth, screenHeight);
+
+	// Attach render buffer to active frame buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferID);
+
+	/// Framebuffer usage
+	// Check if frame buffer is 'complete' (at least one buffer attached, at least one color attachment, same number of samples - complete attachments)
+	try {
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {	// Frame buffer is incomplete
+			char errorMsg[256];
+			sprintf_s(errorMsg, "ERROR::FRAME_BUFFER::INCOMPLETE: %s");
+
+			throw std::runtime_error(errorMsg);
+		}
+		else {																		// Frame buffer is complete
+
+		}
+	}
+	catch (std::exception const& e) { std::cout << "Exception: " << e.what() << std::endl; }
+
+	// Bind back to default frame buffer to enable rendering to the window instead of off-screen rendering in the custom frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Done with framebuffer operations, clean memory
+	glDeleteFramebuffers(1, &frameBufferID);
+#pragma endregion
+
 	/// Light initialisation
-	sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0, -1, 1, 0)));
+	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0, -1, 1, 0)));
 	//sceneLights.push_back(new PhongLight_Dir(glm::vec4(0.f), glm::vec4(0.4f, 0.f, 0.f, 1.f), glm::vec4(0.5f), glm::vec4(1, 0, 0, 0)));
 
 	/*sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.8f, 0.f, 0.f, 1.f), glm::vec4(1.f), 
 		DEFAULT_LIGHT_POS1, 20.f, DEFAULT_MIN_ILLUMINATION));*/
-	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(0.f), glm::vec4(1),
-		glm::vec4(0.f, 2.f, 0.f, 1.f), 80.f, DEFAULT_MIN_ILLUMINATION));
+	sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1),
+		glm::vec4(0.f, 2.f, 0.f, 1.f), 10.f, DEFAULT_MIN_ILLUMINATION));
 	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(0.f, 12.5f, 4.f, 1.f), 200.f, DEFAULT_MIN_ILLUMINATION));
 	//sceneLights.push_back(new PhongLight_Point(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(4.f, 12.5f, 4.f, 1.f), 50.f, DEFAULT_MIN_ILLUMINATION));
 
 
-	sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), 
-		glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f));
+	//sceneLights.push_back(new PhongLight_Spot(glm::vec4(0.f), glm::vec4(1.f), glm::vec4(1.f), 
+	//	glm::vec4(-10.f, 0.f, 0.f, 1.f), glm::vec4(1, 0, 0, 0), 10.f, 14.f));
 
 	/// Texture initialisation
 	if (WRAPPED_OGL_TEX) {
@@ -132,23 +193,23 @@ int RendererProgram::Startup()
 		/// Shader initialisation
 		//// Forward rendering shaders
 		ambientProgram = new ShaderWrapper();
-		ambientProgram->LoadShader("./shaders/forward_ambient.vert", VERT_SHADER);
-		ambientProgram->LoadShader("./shaders/forward_ambient.frag", FRAG_SHADER);
+		ambientProgram->LoadShader("./shaders/phong/forward_ambient.vert", VERT_SHADER);
+		ambientProgram->LoadShader("./shaders/phong/forward_ambient.frag", FRAG_SHADER);
 		ambientProgram->LinkShaders();
 
 		directionalProgram = new ShaderWrapper();
-		directionalProgram->LoadShader("./shaders/forward_directional.vert", VERT_SHADER);
-		directionalProgram->LoadShader("./shaders/forward_directional.frag", FRAG_SHADER);
+		directionalProgram->LoadShader("./shaders/phong/forward_directional.vert", VERT_SHADER);
+		directionalProgram->LoadShader("./shaders/phong/forward_directional.frag", FRAG_SHADER);
 		directionalProgram->LinkShaders();
 
 		pointProgram = new ShaderWrapper();
-		pointProgram->LoadShader("./shaders/forward_point.vert", VERT_SHADER);
-		pointProgram->LoadShader("./shaders/forward_point.frag", FRAG_SHADER);
+		pointProgram->LoadShader("./shaders/phong/forward_point.vert", VERT_SHADER);
+		pointProgram->LoadShader("./shaders/phong/forward_point.frag", FRAG_SHADER);
 		pointProgram->LinkShaders();
 
 		spotProgram = new ShaderWrapper();
-		spotProgram->LoadShader("./shaders/forward_spot.vert", VERT_SHADER);
-		spotProgram->LoadShader("./shaders/forward_spot.frag", FRAG_SHADER);
+		spotProgram->LoadShader("./shaders/phong/forward_spot.vert", VERT_SHADER);
+		spotProgram->LoadShader("./shaders/phong/forward_spot.frag", FRAG_SHADER);
 		spotProgram->LinkShaders();
 
 		/// Material initialisation
@@ -243,7 +304,7 @@ int RendererProgram::Startup()
 		rectTransform->SetScale(glm::vec3(10.f));
 		rectTransform->Translate(glm::vec3(0, -2.f, 0));
 
-		sceneMeshes.push_back(new Mesh(rectVerts, rectFormat, rectTransform, planeMat));
+		//sceneMeshes.push_back(new Mesh(rectVerts, rectFormat, rectTransform, planeMat));
 
 	}
 	else {
@@ -430,26 +491,6 @@ void RendererProgram::Update(float a_dt)
 {
 	FixedUpdate(a_dt);
 
-#pragma region IMGUI
-	// Ensure size and position is only set once and ignores whatever is in imgui.cfg
-	ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiSetCond_Once);
-	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_Once);
-	ImGui::Begin("Graphics Engine Interface");
-
-#pragma region Scene Options
-	/// Point light
-	ImGui::Text("Point Light");
-
-	static float input_shininess = 1.f;
-
-	ImGui::SliderFloat("Material Shininess", &input_shininess, 0.1f, 256.f, "%3.f", 4.f);
-	Mesh* plane = sceneMeshes[0]; plane->GetMaterial().shininessCoefficient = input_shininess;
-#pragma endregion
-
-	ImGui::End();
-#pragma endregion
-
-
 #pragma region Gizmos
 	aie::Gizmos::clear();									// Refresh gizmos for new frame
 
@@ -490,13 +531,37 @@ void RendererProgram::Update(float a_dt)
 
 			aie::Gizmos::addSphere(ptLight->GetPos(), 0.1, 12, 12, radiusColor);									// Light
 			#ifdef DEBUG
-			float radiusScale = 0.25f;
+			float radiusScale = 1.f;
 			aie::Gizmos::addSphere(ptLight->GetPos(), ptLight->GetIlluminationRadius() * radiusScale, 12, 12, radiusColor);		// Illumination radius
 			#endif
 		}
 	}
 
 #pragma endregion Gizmo creation
+
+#if DEBUG IMGUI Light parameters
+	ImGui::Begin("Light Parameters");
+
+	// Find first point light
+	PhongLight_Point* firstPt	= (PhongLight_Point*)*std::find_if(sceneLights.begin(), sceneLights.end(), [](PhongLight* a_light) { return a_light->GetType() == POINT_LIGHT; });
+	
+	static glm::vec4 in_Ptpos = firstPt->GetPos();
+	ImGui::SliderFloat3("Point Light Position", &in_Ptpos[0], -25.f, 25.f); firstPt->SetPos(in_Ptpos);
+	
+	static float in_range	= firstPt->GetIlluminationRadius();
+	ImGui::SliderFloat("Point Light Illumination Radius", &in_range, 0.f, 25.f); firstPt->SetIlluminationRadius(in_range);
+
+	ImGui::End();
+#endif 
+
+#if DEBUG IMGUI Model parameters
+	ImGui::Begin("Model Parameters");
+
+	static glm::vec3 in_modelPos = testModel->GetTransform()->GetPosition();
+	ImGui::SliderFloat3("Model Position", &in_modelPos[0], -25.f, 25.f); testModel->GetTransform()->SetPosition(in_modelPos);
+
+	ImGui::End();
+#endif
 }
 
 void RendererProgram::Render()

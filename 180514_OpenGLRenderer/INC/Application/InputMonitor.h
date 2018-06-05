@@ -10,6 +10,7 @@ public:
 
 	bool GetKeyDown(int a_keyCode);
 	bool GetMouseButtonDown(int a_mouseButtonCode);
+	bool GetMouseButtonUp(int a_mouseButtonCode);
 
 	glm::vec2 GetMouseDeltaXY();
 protected:

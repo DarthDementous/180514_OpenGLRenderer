@@ -77,7 +77,7 @@ int Program::Run(const char* a_windowName, int a_width, int a_height)
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	
+
 	ImGui_ImplGlfwGL3_Init(window, true);
 
 	// Style
