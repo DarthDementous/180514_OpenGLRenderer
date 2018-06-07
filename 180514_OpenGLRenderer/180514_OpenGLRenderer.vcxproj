@@ -161,7 +161,6 @@
     <ClCompile Include="SRC\Rendering\Gizmos.cpp" />
     <ClCompile Include="SRC\Rendering\gl_core_4_4.c" />
     <ClCompile Include="SRC\Application\InputMonitor.cpp" />
-    <ClCompile Include="SRC\main2.cpp" />
     <ClCompile Include="SRC\main.cpp" />
     <ClCompile Include="SRC\Rendering\Light\PhongLight_Dir.cpp" />
     <ClCompile Include="SRC\Rendering\Light\PhongLight_Point.cpp" />
@@ -170,10 +169,13 @@
     <ClCompile Include="SRC\Application\Program.cpp" />
     <ClCompile Include="SRC\Rendering\Light\PhongLight.cpp" />
     <ClCompile Include="SRC\Rendering\Model.cpp" />
+    <ClCompile Include="SRC\Rendering\PostProcessing.cpp" />
     <ClCompile Include="SRC\Rendering\RenderCamera.cpp" />
     <ClCompile Include="SRC\Application\RendererProgram.cpp" />
     <ClCompile Include="SRC\Rendering\ShaderWrapper.cpp" />
-    <ClCompile Include="SRC\Rendering\TextureWrapper.cpp" />
+    <ClCompile Include="SRC\Rendering\Texture\TextureWrapperBase.cpp" />
+    <ClCompile Include="SRC\Rendering\Texture\RenderTexture.cpp" />
+    <ClCompile Include="SRC\Rendering\Texture\Texture.cpp" />
     <ClCompile Include="SRC\Utility\Transform.cpp" />
     <ClCompile Include="SRC\Rendering\VertexFormat.cpp" />
   </ItemGroup>
@@ -183,13 +185,16 @@
     <ClInclude Include="INC\Rendering\Light\PhongLight_Point.h" />
     <ClInclude Include="INC\Rendering\Light\PhongLight_Spot.h" />
     <ClInclude Include="INC\Rendering\Model.h" />
-    <ClInclude Include="INC\Rendering\TextureWrapper.h" />
+    <ClInclude Include="INC\Rendering\PostProcessing.h" />
+    <ClInclude Include="INC\Rendering\Texture\Texture.h" />
     <ClInclude Include="INC\Rendering\gl_core_4_4.h" />
     <ClInclude Include="INC\Application\InputMonitor.h" />
     <ClInclude Include="INC\Rendering\Mesh.h" />
     <ClInclude Include="INC\Application\Program.h" />
     <ClInclude Include="INC\Rendering\RenderCamera.h" />
     <ClInclude Include="INC\Application\RendererProgram.h" />
+    <ClInclude Include="INC\Rendering\Texture\RenderTexture.h" />
+    <ClInclude Include="INC\Rendering\Texture\TextureWrapperBase.h" />
     <ClInclude Include="INC\Utility\Renderer_Utility_Funcs.h" />
     <ClInclude Include="INC\Utility\Renderer_Utility_Literals.h" />
     <ClInclude Include="INC\Rendering\ShaderWrapper.h" />
@@ -206,13 +211,17 @@
     <None Include="BUILD\shaders\phong\forward_ambient.frag" />
     <None Include="BUILD\shaders\phong\forward_ambient.vert" />
     <None Include="BUILD\shaders\phong\forward_directional.frag" />
-    <None Include="BUILD\shaders\phong\forward_directional.vert" />
+    <None Include="BUILD\shaders\phong\forward_header.glsl" />
+    <None Include="BUILD\shaders\phong\forward_light.vert" />
     <None Include="BUILD\shaders\phong\forward_point.frag" />
-    <None Include="BUILD\shaders\phong\forward_point.vert" />
     <None Include="BUILD\shaders\phong\forward_spot.frag" />
-    <None Include="BUILD\shaders\phong\forward_spot.vert" />
+    <None Include="BUILD\shaders\post\post_blur.frag" />
+    <None Include="BUILD\shaders\post\post_default.frag" />
+    <None Include="BUILD\shaders\post\post_edge.frag" />
     <None Include="BUILD\shaders\post\post_gamma.frag" />
     <None Include="BUILD\shaders\post\post_base.vert" />
+    <None Include="BUILD\shaders\post\post_invert.frag" />
+    <None Include="BUILD\shaders\post\post_sharpen.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,14 @@
+# Blender MTL File: 'Sci-Fi-Floor-1-BLEND.blend'
+# Material Count: 1
+
+newmtl None
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Sci-Fi-Floor-Diffuse.tga
+map_Bump Sci-Fi-Floor-Normal.tga
+map_Ks Sci-Fi-Floor-Specular.tga

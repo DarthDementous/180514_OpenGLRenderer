@@ -1,9 +1,15 @@
-﻿  RendererProgram.cpp
-c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(410): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(472): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(482): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(497): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  main.cpp
+﻿  InputMonitor.cpp
+  Program.cpp
+  RendererProgram.cpp
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(326): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\application\rendererprogram.cpp(386): warning C4305: 'argument': truncation from 'double' to 'float'
+  Mesh.cpp
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\rendering\mesh.cpp(222): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+  PostProcessing.cpp
+c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\rendering\postprocessing.cpp(58): warning C4473: 'sprintf_s' : not enough arguments passed for format string
+  c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\rendering\postprocessing.cpp(58): note: placeholders and their parameters expect 1 variadic arguments, but 0 were provided
+  c:\users\atwindows7\documents\repositories\180514_openglrenderer\180514_openglrenderer\src\rendering\postprocessing.cpp(58): note: the missing variadic argument 1 is required by format string '%s'
+  ShaderWrapper.cpp
   Generating Code...
   180514_OpenGLRenderer.vcxproj -> C:\Users\ATWindows7\Documents\Repositories\180514_OpenGLRenderer\180514_OpenGLRenderer\BUILD\RendererProgram_Debug_x64.exe
   180514_OpenGLRenderer.vcxproj -> C:\Users\ATWindows7\Documents\Repositories\180514_OpenGLRenderer\180514_OpenGLRenderer\BUILD\RendererProgram_Debug_x64.pdb (Partial PDB)

@@ -1,6 +1,8 @@
 #include <iostream>
 #include "RendererProgram.h"
 
+using namespace SPRON;
+
 int main() {
 
 	RendererProgram* program = new RendererProgram();

@@ -4,21 +4,23 @@
 
 struct GLFWwindow;
 
-class InputMonitor {
-public:
-	static InputMonitor* GetInstance();
+namespace SPRON {
+	class InputMonitor {
+	public:
+		static InputMonitor* GetInstance();
 
-	bool GetKeyDown(int a_keyCode);
-	bool GetMouseButtonDown(int a_mouseButtonCode);
-	bool GetMouseButtonUp(int a_mouseButtonCode);
+		bool GetKeyDown(int a_keyCode);
+		bool GetMouseButtonDown(int a_mouseButtonCode);
+		bool GetMouseButtonUp(int a_mouseButtonCode);
 
-	glm::vec2 GetMouseDeltaXY();
-protected:
-private:
-	InputMonitor();
-	~InputMonitor();
+		glm::vec2 GetMouseDeltaXY();
+	protected:
+	private:
+		InputMonitor();
+		~InputMonitor();
 
-	static InputMonitor* m_singleton;
+		static InputMonitor* m_singleton;
 
-	glm::tvec2<double> m_lastCursorPos;
-};
+		glm::tvec2<double> m_lastCursorPos;
+	};
+}

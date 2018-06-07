@@ -18,9 +18,6 @@
     <ClCompile Include="SRC\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\main2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\Application\InputMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Rendering\Gizmos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\Rendering\TextureWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Rendering\RenderCamera.cpp">
@@ -81,6 +75,18 @@
     <ClCompile Include="SRC\IMGUI\imgui_impl_glfw_gl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SRC\Rendering\Texture\RenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Texture\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\Texture\TextureWrapperBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Rendering\PostProcessing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INC\Rendering\Mesh.h">
@@ -110,9 +116,6 @@
     <ClInclude Include="INC\Application\RendererProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\TextureWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INC\Rendering\RenderCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -137,16 +140,24 @@
     <ClInclude Include="INC\Utility\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Rendering\Texture\RenderTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Rendering\Texture\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Rendering\Texture\TextureWrapperBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Rendering\PostProcessing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BUILD\shaders\phong\forward_ambient.frag" />
     <None Include="BUILD\shaders\phong\forward_ambient.vert" />
     <None Include="BUILD\shaders\phong\forward_directional.frag" />
-    <None Include="BUILD\shaders\phong\forward_directional.vert" />
-    <None Include="BUILD\shaders\phong\forward_point.frag" />
-    <None Include="BUILD\shaders\phong\forward_point.vert" />
     <None Include="BUILD\shaders\phong\forward_spot.frag" />
-    <None Include="BUILD\shaders\phong\forward_spot.vert" />
     <None Include="BUILD\shaders\old\base.frag" />
     <None Include="BUILD\shaders\old\base.vert" />
     <None Include="BUILD\shaders\old\base_lit_color.frag" />
@@ -154,5 +165,13 @@
     <None Include="BUILD\shaders\old\base_mix.frag" />
     <None Include="BUILD\shaders\post\post_base.vert" />
     <None Include="BUILD\shaders\post\post_gamma.frag" />
+    <None Include="BUILD\shaders\phong\forward_light.vert" />
+    <None Include="BUILD\shaders\phong\forward_header.glsl" />
+    <None Include="BUILD\shaders\phong\forward_point.frag" />
+    <None Include="BUILD\shaders\post\post_default.frag" />
+    <None Include="BUILD\shaders\post\post_invert.frag" />
+    <None Include="BUILD\shaders\post\post_sharpen.frag" />
+    <None Include="BUILD\shaders\post\post_blur.frag" />
+    <None Include="BUILD\shaders\post\post_edge.frag" />
   </ItemGroup>
 </Project>
