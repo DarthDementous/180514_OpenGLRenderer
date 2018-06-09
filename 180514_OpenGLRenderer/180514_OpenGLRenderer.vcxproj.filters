@@ -15,141 +15,141 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SRC\main.cpp">
+    <ClCompile Include="source\Application\InputMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Application\InputMonitor.cpp">
+    <ClCompile Include="source\IMGUI\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Application\Program.cpp">
+    <ClCompile Include="source\IMGUI\imgui_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\gl_core_4_4.c">
+    <ClCompile Include="source\IMGUI\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Application\RendererProgram.cpp">
+    <ClCompile Include="source\IMGUI\imgui_impl_glfw_gl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\VertexFormat.cpp">
+    <ClCompile Include="source\Application\Program\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Utility\Transform.cpp">
+    <ClCompile Include="source\Application\Program\RendererProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Mesh.cpp">
+    <ClCompile Include="source\Objects\RenderCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Gizmos.cpp">
+    <ClCompile Include="source\Wrappers\ShaderWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\RenderCamera.cpp">
+    <ClCompile Include="source\Objects\Light\PhongLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Light\PhongLight.cpp">
+    <ClCompile Include="source\Objects\Light\PhongLight_Dir.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Dir.cpp">
+    <ClCompile Include="source\Objects\Light\PhongLight_Point.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Point.cpp">
+    <ClCompile Include="source\Objects\Light\PhongLight_Spot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Spot.cpp">
+    <ClCompile Include="source\Wrappers\Texture\RenderTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\ShaderWrapper.cpp">
+    <ClCompile Include="source\Wrappers\Texture\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Model.cpp">
+    <ClCompile Include="source\Wrappers\Texture\TextureWrapperBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\IMGUI\imgui.cpp">
+    <ClCompile Include="source\Wrappers\PostProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\IMGUI\imgui_demo.cpp">
+    <ClCompile Include="source\Wrappers\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\IMGUI\imgui_draw.cpp">
+    <ClCompile Include="source\Objects\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\IMGUI\imgui_impl_glfw_gl3.cpp">
+    <ClCompile Include="source\Wrappers\VertexFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Texture\RenderTexture.cpp">
+    <ClCompile Include="source\Utility\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Texture\Texture.cpp">
+    <ClCompile Include="source\Wrappers\Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\Texture\TextureWrapperBase.cpp">
+    <ClCompile Include="source\Wrappers\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Rendering\PostProcessing.cpp">
+    <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\Rendering\Mesh.h">
+    <ClInclude Include="source\Application\InputMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\VertexFormat.h">
+    <ClInclude Include="source\Application\Program\Program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Application\Program.h">
+    <ClInclude Include="source\Application\Program\RendererProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Application\InputMonitor.h">
+    <ClInclude Include="source\Objects\RenderCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\gl_core_4_4.h">
+    <ClInclude Include="source\Objects\Light\PhongLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Utility\Transform.h">
+    <ClInclude Include="source\Objects\Light\PhongLight_Dir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Utility\Renderer_Utility_Literals.h">
+    <ClInclude Include="source\Objects\Light\PhongLight_Point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Utility\Renderer_Utility_Funcs.h">
+    <ClInclude Include="source\Objects\Light\PhongLight_Spot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Application\RendererProgram.h">
+    <ClInclude Include="source\Wrappers\Texture\RenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\RenderCamera.h">
+    <ClInclude Include="source\Wrappers\Texture\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Light\PhongLight.h">
+    <ClInclude Include="source\Wrappers\Texture\TextureWrapperBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Dir.h">
+    <ClInclude Include="source\Wrappers\ShaderWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Point.h">
+    <ClInclude Include="source\Wrappers\PostProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Spot.h">
+    <ClInclude Include="source\Wrappers\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\ShaderWrapper.h">
+    <ClInclude Include="source\Objects\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Model.h">
+    <ClInclude Include="source\Wrappers\VertexFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Utility\Vertex.h">
+    <ClInclude Include="source\Utility\Renderer_Utility_Funcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Texture\RenderTexture.h">
+    <ClInclude Include="source\Utility\Renderer_Utility_Literals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Texture\Texture.h">
+    <ClInclude Include="source\Utility\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\Texture\TextureWrapperBase.h">
+    <ClInclude Include="source\Utility\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Rendering\PostProcessing.h">
+    <ClInclude Include="source\Wrappers\gl_core_4_4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -173,5 +173,8 @@
     <None Include="BUILD\shaders\post\post_sharpen.frag" />
     <None Include="BUILD\shaders\post\post_blur.frag" />
     <None Include="BUILD\shaders\post\post_edge.frag" />
+    <None Include="BUILD\shaders\debug\visualise_normals.geom" />
+    <None Include="BUILD\shaders\debug\visualise_normals.frag" />
+    <None Include="BUILD\shaders\debug\visualise_normals.vert" />
   </ItemGroup>
 </Project>

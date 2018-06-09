@@ -23,7 +23,7 @@ struct GPU_Pt_Light {
 
 struct GPU_Spot_Light {
 	vec4	position;
-	vec4	spotDir;						// Direction spotlight is aiming in
+	vec3	spotDir;						// Direction spotlight is aiming in
 	float	spotInnerCosine;				// The cosine of the angle that specifies the radius of the cone in which objects are lit
 	float	spotOuterCosine;
 
@@ -32,7 +32,7 @@ struct GPU_Spot_Light {
 };
 
 struct GPU_Dir_Light {
-	vec4	castDir;		// Direction light is pointing in
+	vec3	castDir;		// Direction light is pointing in
 	
 	GPU_Light_Base base;
 };
@@ -48,14 +48,23 @@ struct GPU_Material {		// Serves as a container of uniform variables, accessed v
 
 	sampler2D	specularMap;	// Texture in a one color spectrum that defines the highlight points for specular
 	bool		useSpecularMap;
+
+	sampler2D	normalMap;
+	bool		useNormalMap;
 };
 
-varying vec2 vertTexCoord;			
-varying vec4 vertNormal;
-varying vec4 fragPos;				// World position of fragment
+// VARYING NOTE: Vec4s will be treated like colors! Meaning that the w component will be interpolated, leading to possibly incorrect calculations. 
+// Make sure everything comes in as a vec3. The same goes for matrices, unused data will be interpolated.
+in vec2 vertTexCoord;			
+in float bitangentHandedness;
+//// World space
+in vec3 worldNormal;
+in vec3 worldTangent;
+in vec3 worldFragPos;
 
+uniform mat4 modelTransform;
+uniform vec3 worldViewerPos;
 uniform GPU_Material material;
-uniform vec4 viewerPos;
 
 /**
 *	@brief Calculate illumination factor for fragment based on its distance and attenuation data of the light.
@@ -84,22 +93,17 @@ float CalculateIllumination(float a_dist, GPU_Light_Attenuation a_attenuationDat
 	@param a_specularSample is the color of the sampled texel of the specular map for this fragment.
 	@return vec4 containing color information for a fragment lit by raw phong light.
 */
-vec4 CalculateRawLighting(GPU_Light_Base a_lightBase, vec4 a_dirToLight, vec4 a_normal, vec4 a_dirToViewer, vec4 a_diffuseSample, vec4 a_specularSample) {
+vec4 CalculateRawLighting(GPU_Light_Base a_lightBase, vec3 a_dirToLight, vec3 a_normal, vec3 a_dirToViewer, vec4 a_diffuseSample, vec4 a_specularSample) {
 	// Calculate ambient
 	vec4 finalAmbient = a_lightBase.ambient * material.ambientColor * a_diffuseSample;
 
 	// Calculate diffuse
-	float	diffuseScale	= max(dot(a_normal, a_dirToLight), 0.0f);	// How much fragment is impacted by the light based off its direction (fragment -> light source)
+	float	diffuseScale	= max(dot(a_normal, a_dirToLight), 0.0f);		// How much fragment is impacted by the light based off its direction (fragment -> light source)
 	vec4	finalDiffuse	= a_lightBase.diffuse * diffuseScale * material.diffuseColor * a_diffuseSample;
 
-	// Calculate specular
-	#if 0 /// Phong specular model
-	vec4	reflectDir		= reflect(-a_dirToLight, a_normal);			// Reflection direction of light after hitting normal 
-	float	specularScale	= pow(max(dot(a_dirToViewer, reflectDir), 0.0), material.shininessCoefficient);	// Like with diffuse, if dot product is negative then viewer cannot see specular
-	#else /// Blinn-Phong specular model 
-	vec4	halfwayDir		= normalize(a_dirToLight + a_dirToViewer);		// Direction halfway in between normal and light direction, avoids negative specular scale if view angle is greater than 90 degrees
+	// Calculate specular (Blinn-phong model)
+	vec3	halfwayDir		= normalize(a_dirToLight + a_dirToViewer);		// Direction halfway in between normal and light direction, avoids negative specular scale if view angle is greater than 90 degrees
 	float	specularScale	= pow(max(dot(a_normal, halfwayDir), 0.0), material.shininessCoefficient);
-	#endif
 	vec4	finalSpecular	= a_lightBase.specular * specularScale * material.specular * a_specularSample;
 
 	return (finalAmbient + finalDiffuse + finalSpecular);
@@ -114,13 +118,13 @@ vec4 CalculateRawLighting(GPU_Light_Base a_lightBase, vec4 a_dirToLight, vec4 a_
 	@param a_specularSample is the color of the sampled texel of the specular map for this fragment.
 	@return vec4 containing color information for a fragment lit by a point light.
 */
-vec4 CalculatePointLighting(GPU_Pt_Light a_lightSource, vec4 a_normal, vec4 a_viewerDir, vec4 a_diffuseSample, vec4 a_specularSample) {
-	vec4 dirToLight = normalize(a_lightSource.position - fragPos); 
+vec4 CalculatePointLighting(GPU_Pt_Light a_lightSource, vec3 a_normal, vec3 a_viewerDir, vec4 a_diffuseSample, vec4 a_specularSample) {
+	vec3 dirToLight = normalize(a_lightSource.position.xyz - worldFragPos); 
 	
 	vec4 pointLighting = CalculateRawLighting(a_lightSource.base, dirToLight, a_normal, a_viewerDir, a_diffuseSample, a_specularSample);
 	
 	// Use modified light attenuation equation to get illumination scale for fragment, sourced from: https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-	float illumination	= CalculateIllumination(length(fragPos - a_lightSource.position), a_lightSource.attenuation);
+	float illumination	= CalculateIllumination(length(worldFragPos - a_lightSource.position.xyz), a_lightSource.attenuation);
 	pointLighting		*= illumination;
 
 	// Calculate and return final fragment color after applying phong point lighting
@@ -136,8 +140,8 @@ vec4 CalculatePointLighting(GPU_Pt_Light a_lightSource, vec4 a_normal, vec4 a_vi
 	@param a_specularSample is the color of the sampled texel of the specular map for this fragment.
 	@return vec4 containing color information for a fragment lit by a spot light.
 */
-vec4 CalculateSpotLighting(GPU_Spot_Light a_lightSource, vec4 a_normal, vec4 a_viewerDir, vec4 a_diffuseSample, vec4 a_specularSample) {
-	vec4 dirToLight = normalize(a_lightSource.position - fragPos);
+vec4 CalculateSpotLighting(GPU_Spot_Light a_lightSource, vec3 a_normal, vec3 a_viewerDir, vec4 a_diffuseSample, vec4 a_specularSample) {
+	vec3 dirToLight = normalize(a_lightSource.position.xyz - worldFragPos); 
 	
 	vec4 spotLighting = CalculateRawLighting(a_lightSource.base, dirToLight, a_normal, a_viewerDir, a_diffuseSample, a_specularSample);
 
@@ -150,3 +154,55 @@ vec4 CalculateSpotLighting(GPU_Spot_Light a_lightSource, vec4 a_normal, vec4 a_v
 
 	return spotLighting;
 }
+
+/*
+	@brief Extrapolate normal from normal map and transform it into world space with a TBN matrix.
+	@return Sampled normal in correct range and in world space.
+*/
+vec3 CalculateNormal() {
+	vec3 N = normalize(worldNormal);
+	vec3 T = normalize(worldTangent);
+
+	// Ensure tangent is orthogonal to the normal (90 degrees) by re-orthogonalizing
+	T = normalize(T - dot(T, N) * N);
+
+	vec3 B = cross(N, T) * bitangentHandedness;		// Get unknown up axis by getting the cross between the right (tangent)
+													// NOTE: Timesed by the handedness to ensure it always forms a right-handed system with the other axis	
+	// Sample normal map
+	vec3 bumpMapN = texture(material.normalMap, vertTexCoord).rgb;
+
+	bumpMapN = normalize(2.0 * bumpMapN - 1.f);		// Convert sampled normal from color range (0-1) to normal range (-1-1)
+	
+	// Convert sampled normal to world space
+	vec3 finalN;
+	mat3 TBN = mat3(T, B, N);
+	
+	finalN = TBN * bumpMapN;
+	finalN = normalize(finalN);
+
+	return finalN;
+}
+
+/*
+	@brief Set global parameters for lighting including direction to viewer and texel samples.
+	@param a_diffuseSample is the diffuse sample to set.
+	@param a_specularSample is the specular sample to set.
+	@param a_normalSample is the normal sample to set.
+	@param a_dirToViewer is the direction from the fragment pos to the viewer to set.
+	@return void.
+*/
+void SetLightingParameters(inout vec4 a_diffuseSample, inout vec4 a_specularSample, inout vec3 a_normalSample, inout vec3 a_dirToViewer) {
+	// Calculate lighting parameters
+	a_diffuseSample = vec4(0.6f, 0.2f, 0.7f, 1.f);	// Set to default 'texture not found' color
+	if (material.useDiffuseMap == true) { a_diffuseSample = texture(material.diffuseMap, vertTexCoord); }
+
+	a_specularSample = vec4(1);						// Set to white color so same specular applies to all fragments
+	if (material.useSpecularMap == true) { a_specularSample = texture(material.specularMap, vertTexCoord); }
+
+	//// Normal map
+	a_normalSample = worldNormal;					// Set to default interpolated normal in world space
+	if (material.useNormalMap == true) { a_normalSample = CalculateNormal(); }
+
+	a_dirToViewer = normalize(worldViewerPos - worldFragPos);		// Fragment pos -> viewer
+}
+

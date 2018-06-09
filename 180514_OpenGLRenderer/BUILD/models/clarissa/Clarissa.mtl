@@ -1,0 +1,60 @@
+newmtl lambert9SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_PantsSet_BaseColor.tga
+Ni 1.00
+newmtl lambert10SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_SkinSet_BaseColor.png
+bump Clarissa_SkinSet_Normal.png
+Ni 1.00
+newmtl lambert11SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_ShirtGroupSet_BaseColor.tga
+Ni 1.00
+newmtl lambert12SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_EyeSet_BaseColor.tga
+Ni 1.00
+newmtl lambert13SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_HairSet_BaseColor.tga
+bump Clarissa_HairSet_Normal.tga -bm 1
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 1.27
+newmtl lambert14SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_EyeSet_BaseColor.tga
+Ni 1.00
+newmtl lambert15SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_EyeSet_BaseColor.tga
+Ni 1.00
+newmtl lambert16SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Clarissa_ShirtGroupSet_BaseColor.tga
+Ni 1.00

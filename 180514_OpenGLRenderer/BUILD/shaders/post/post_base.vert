@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 layout (location = 0) in vec2 a_pos;					// 2D NDC coordinates
 layout (location = 1) in vec2 a_texCoords;
 

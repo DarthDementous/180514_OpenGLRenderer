@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 varying vec2 vertTexCoord;		// Take in interpolated version of tex coordinate passed in by vert shader
 
 uniform vec4		ambient;			// Contains light color and intensity

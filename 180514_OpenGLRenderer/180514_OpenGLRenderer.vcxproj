@@ -74,24 +74,28 @@
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)LIB\imgui\;$(SolutionDir)LIB\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)LIB\assimp\;$(SolutionDir)LIB\GLFW\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)BUILD\</OutDir>
     <TargetName>RendererProgram_$(Configuration)_$(Platform)</TargetName>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +103,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)source\Wrappers\;$(ProjectDir)source\Application\Program\;$(ProjectDir)source\Application\;$(ProjectDir)source\Utility\;$(ProjectDir)source\Objects\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -113,7 +117,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)source\Wrappers\;$(ProjectDir)source\Application\Program\;$(ProjectDir)source\Application\;$(ProjectDir)source\Utility\;$(ProjectDir)source\Objects\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -129,7 +133,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)source\Wrappers\;$(ProjectDir)source\Application\Program\;$(ProjectDir)source\Application\;$(ProjectDir)source\Utility\;$(ProjectDir)source\Objects\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -145,7 +149,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)INC\Rendering\;$(ProjectDir)INC\Utility\;$(ProjectDir)INC\Application\;$(ProjectDir)INC\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)source\Wrappers\;$(ProjectDir)source\Application\Program\;$(ProjectDir)source\Application\;$(ProjectDir)source\Utility\;$(ProjectDir)source\Objects\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -154,55 +158,58 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SRC\IMGUI\imgui.cpp" />
-    <ClCompile Include="SRC\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="SRC\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="SRC\IMGUI\imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="SRC\Rendering\Gizmos.cpp" />
-    <ClCompile Include="SRC\Rendering\gl_core_4_4.c" />
-    <ClCompile Include="SRC\Application\InputMonitor.cpp" />
-    <ClCompile Include="SRC\main.cpp" />
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Dir.cpp" />
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Point.cpp" />
-    <ClCompile Include="SRC\Rendering\Light\PhongLight_Spot.cpp" />
-    <ClCompile Include="SRC\Rendering\Mesh.cpp" />
-    <ClCompile Include="SRC\Application\Program.cpp" />
-    <ClCompile Include="SRC\Rendering\Light\PhongLight.cpp" />
-    <ClCompile Include="SRC\Rendering\Model.cpp" />
-    <ClCompile Include="SRC\Rendering\PostProcessing.cpp" />
-    <ClCompile Include="SRC\Rendering\RenderCamera.cpp" />
-    <ClCompile Include="SRC\Application\RendererProgram.cpp" />
-    <ClCompile Include="SRC\Rendering\ShaderWrapper.cpp" />
-    <ClCompile Include="SRC\Rendering\Texture\TextureWrapperBase.cpp" />
-    <ClCompile Include="SRC\Rendering\Texture\RenderTexture.cpp" />
-    <ClCompile Include="SRC\Rendering\Texture\Texture.cpp" />
-    <ClCompile Include="SRC\Utility\Transform.cpp" />
-    <ClCompile Include="SRC\Rendering\VertexFormat.cpp" />
+    <ClCompile Include="source\IMGUI\imgui.cpp" />
+    <ClCompile Include="source\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="source\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="source\IMGUI\imgui_impl_glfw_gl3.cpp" />
+    <ClCompile Include="source\Wrappers\Gizmos.cpp" />
+    <ClCompile Include="source\Wrappers\gl_core_4_4.c" />
+    <ClCompile Include="source\Application\InputMonitor.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\Objects\Light\PhongLight_Dir.cpp" />
+    <ClCompile Include="source\Objects\Light\PhongLight_Point.cpp" />
+    <ClCompile Include="source\Objects\Light\PhongLight_Spot.cpp" />
+    <ClCompile Include="source\Wrappers\Mesh.cpp" />
+    <ClCompile Include="source\Application\Program\Program.cpp" />
+    <ClCompile Include="source\Objects\Light\PhongLight.cpp" />
+    <ClCompile Include="source\Objects\Model.cpp" />
+    <ClCompile Include="source\Wrappers\PostProcessing.cpp" />
+    <ClCompile Include="source\Objects\RenderCamera.cpp" />
+    <ClCompile Include="source\Application\Program\RendererProgram.cpp" />
+    <ClCompile Include="source\Wrappers\ShaderWrapper.cpp" />
+    <ClCompile Include="source\Wrappers\Texture\TextureWrapperBase.cpp" />
+    <ClCompile Include="source\Wrappers\Texture\RenderTexture.cpp" />
+    <ClCompile Include="source\Wrappers\Texture\Texture.cpp" />
+    <ClCompile Include="source\Utility\Transform.cpp" />
+    <ClCompile Include="source\Wrappers\VertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\Rendering\Light\PhongLight.h" />
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Dir.h" />
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Point.h" />
-    <ClInclude Include="INC\Rendering\Light\PhongLight_Spot.h" />
-    <ClInclude Include="INC\Rendering\Model.h" />
-    <ClInclude Include="INC\Rendering\PostProcessing.h" />
-    <ClInclude Include="INC\Rendering\Texture\Texture.h" />
-    <ClInclude Include="INC\Rendering\gl_core_4_4.h" />
-    <ClInclude Include="INC\Application\InputMonitor.h" />
-    <ClInclude Include="INC\Rendering\Mesh.h" />
-    <ClInclude Include="INC\Application\Program.h" />
-    <ClInclude Include="INC\Rendering\RenderCamera.h" />
-    <ClInclude Include="INC\Application\RendererProgram.h" />
-    <ClInclude Include="INC\Rendering\Texture\RenderTexture.h" />
-    <ClInclude Include="INC\Rendering\Texture\TextureWrapperBase.h" />
-    <ClInclude Include="INC\Utility\Renderer_Utility_Funcs.h" />
-    <ClInclude Include="INC\Utility\Renderer_Utility_Literals.h" />
-    <ClInclude Include="INC\Rendering\ShaderWrapper.h" />
-    <ClInclude Include="INC\Utility\Transform.h" />
-    <ClInclude Include="INC\Rendering\VertexFormat.h" />
-    <ClInclude Include="INC\Utility\Vertex.h" />
+    <ClInclude Include="source\Objects\Light\PhongLight.h" />
+    <ClInclude Include="source\Objects\Light\PhongLight_Dir.h" />
+    <ClInclude Include="source\Objects\Light\PhongLight_Point.h" />
+    <ClInclude Include="source\Objects\Light\PhongLight_Spot.h" />
+    <ClInclude Include="source\Objects\Model.h" />
+    <ClInclude Include="source\Wrappers\PostProcessing.h" />
+    <ClInclude Include="source\Wrappers\Texture\Texture.h" />
+    <ClInclude Include="source\Wrappers\gl_core_4_4.h" />
+    <ClInclude Include="source\Application\InputMonitor.h" />
+    <ClInclude Include="source\Wrappers\Mesh.h" />
+    <ClInclude Include="source\Application\Program\Program.h" />
+    <ClInclude Include="source\Objects\RenderCamera.h" />
+    <ClInclude Include="source\Application\Program\RendererProgram.h" />
+    <ClInclude Include="source\Wrappers\Texture\RenderTexture.h" />
+    <ClInclude Include="source\Wrappers\Texture\TextureWrapperBase.h" />
+    <ClInclude Include="source\Utility\Renderer_Utility_Funcs.h" />
+    <ClInclude Include="source\Utility\Renderer_Utility_Literals.h" />
+    <ClInclude Include="source\Wrappers\ShaderWrapper.h" />
+    <ClInclude Include="source\Utility\Transform.h" />
+    <ClInclude Include="source\Wrappers\VertexFormat.h" />
+    <ClInclude Include="source\Utility\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BUILD\shaders\debug\visualise_normals.frag" />
+    <None Include="BUILD\shaders\debug\visualise_normals.geom" />
+    <None Include="BUILD\shaders\debug\visualise_normals.vert" />
     <None Include="BUILD\shaders\old\base.vert" />
     <None Include="BUILD\shaders\old\base_lit_color.frag" />
     <None Include="BUILD\shaders\old\base_lit_fixed.frag" />

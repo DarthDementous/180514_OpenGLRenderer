@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 varying vec2 texCoords;
 
 uniform sampler2D screenRenderTex;
