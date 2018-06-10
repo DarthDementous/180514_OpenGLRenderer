@@ -13,8 +13,10 @@
 
 namespace SPRON {
 
-	ShaderWrapper::ShaderWrapper()
+	ShaderWrapper::ShaderWrapper(const std::string& a_name)
 	{
+		m_name = a_name;
+
 		// Create shader program on GPU and get unique id from openGL
 		m_ID = glCreateProgram();
 	}

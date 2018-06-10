@@ -30,19 +30,19 @@ namespace SPRON {
 
 			glBindFramebuffer(GL_FRAMEBUFFER, m_stn->m_frameBufferID);	// Allow future read and write frame buffer operations to affect this buffer
 			
-			// Create and attach render texture to frame buffer
+			/// Create and attach render texture to frame buffer [SCREEN TEXTURE]
 			GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport); int screenWidth = viewport[2], screenHeight = viewport[3];
 
-			m_stn->m_renderTex = new RenderTexture(screenWidth, screenHeight);	// Make sure texture covers frame dimensions
+			m_stn->m_screenTex = new RenderTexture(screenWidth, screenHeight);	// Make sure texture covers frame dimensions
 
 			glFramebufferTexture2D(
 				GL_FRAMEBUFFER,				// Frame buffer target 
 				GL_COLOR_ATTACHMENT0,		// Type of attachment (can be multiple)
 				GL_TEXTURE_2D,				// Type of texture being attached
-				*m_stn->m_renderTex,		// Texture ID
+				*m_stn->m_screenTex,		// Texture ID
 				0);							// Mipmap level (kept at 0 because not being used) 
 
-			// Create and attach render buffer to frame buffer
+			/// Create and attach render buffer to frame buffer
 			glGenRenderbuffers(1, &m_stn->m_renderBufferID);
 
 			glBindRenderbuffer(GL_RENDERBUFFER, m_stn->m_renderBufferID);
@@ -80,10 +80,10 @@ namespace SPRON {
 			// Initialise default screen shader
 			m_stn->m_baseEffect = new ShaderWrapper();
 			m_stn->m_baseEffect->LoadShader("./shaders/post/post_base.vert", VERT_SHADER);
-			m_stn->m_baseEffect->LoadShader("./shaders/post/post_default.frag", FRAG_SHADER);
+			m_stn->m_baseEffect->LoadShader("./shaders/post/post_hdr_bloom.frag", FRAG_SHADER);
 			m_stn->m_baseEffect->LinkShaders();
 
-			m_stn->m_baseEffect->SetTexture("screenRenderTex", m_stn->m_renderTex);
+			m_stn->m_baseEffect->SetTexture("screenRenderTex", m_stn->m_screenTex);
 
 			// Unbind custom frame buffer
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -126,6 +126,16 @@ namespace SPRON {
 		glDisable(GL_DEPTH_TEST);		// Disable depth test or the screen quad will be discarded
 		glClear(GL_COLOR_BUFFER_BIT);	// No depth-testing, only need to refresh color
 
+		// Optional HDR
+		ImGui::Begin("HDR");
+		
+		static bool in_enableHDR = true; ImGui::Checkbox("Enable HDR", &in_enableHDR); m_stn->m_baseEffect->SetBool("enableHDR", in_enableHDR);
+		if (in_enableHDR) {
+			static float in_exposure = 1; ImGui::DragFloat("Exposure", &in_exposure, 0.01f, 0.f, 10.f); m_stn->m_baseEffect->SetFloat("exposure", in_exposure);
+		}
+
+		ImGui::End();
+
 		// Draw screen render texture
 		m_stn->m_screenMesh->Render(m_stn->m_baseEffect);
 
@@ -135,19 +145,55 @@ namespace SPRON {
 		glBlendFunc(GL_ONE, GL_ONE);	// Take existing frag color *1 and add it onto the new frag color *1
 
 		/// Post-processing effect passes
-		ImGui::Begin("Enable Processing Effects");
-		static bool in_enabled = true; ImGui::Checkbox("Enabled", &in_enabled);
+		ImGui::Begin("Post Processing Effects");
+
+#if ENABLE_SHARPEN
+		static bool in_enableSharpen = false; ImGui::Checkbox("Enable Sharpen", &in_enableSharpen);
+		static float in_sharpenClarity = 100.f; if (in_enableSharpen) ImGui::DragFloat("Sharpen Clarity", &in_sharpenClarity, 1.f);
+#endif
+
+#if ENABLE_BLUR
+		static bool in_enableBlur = false; ImGui::Checkbox("Enable Blur", &in_enableBlur);
+		static float in_blurClarity = 100.f; if (in_enableBlur) ImGui::DragFloat("Blur Clarity", &in_blurClarity, 1.f);
+#endif
+
+#if ENABLE_EDGE_DETECT
+		static bool in_enableEdge = false; ImGui::Checkbox("Enable Edge", &in_enableEdge);
+		static float in_edgeClarity = 100.f; if (in_enableEdge) ImGui::DragFloat("Edge Clarity", &in_edgeClarity, 1.f); 
+#endif
 		ImGui::End();
 
-		if (in_enabled) {
-			for (int i = 0; i < m_stn->m_effects.size(); ++i) {
-				ShaderWrapper* currentEffect = m_stn->m_effects[i];
+		for (int i = 0; i < m_stn->m_effects.size(); ++i) {
+			ShaderWrapper* currentEffect = m_stn->m_effects[i];
 
-				// Set render texture parameter
-				currentEffect->SetTexture("screenRenderTex", m_stn->m_renderTex);
+			// Set render texture parameter
+			currentEffect->SetTexture("screenRenderTex", m_stn->m_screenTex);
 
-				m_stn->m_screenMesh->Render(m_stn->m_effects[i]);
+			/// Sharpen
+#if ENABLE_SHARPEN
+			if (in_enableSharpen && currentEffect->GetName() == "post_sharpen") { 
+				
+				currentEffect->SetFloat("clarityFactor", in_sharpenClarity);
+				m_stn->m_screenMesh->Render(currentEffect);
 			}
+#endif
+
+			/// Blur
+#if ENABLE_BLUR
+			if (in_enableBlur && currentEffect->GetName() == "post_blur") {
+				
+				currentEffect->SetFloat("clarityFactor", in_blurClarity);
+				m_stn->m_screenMesh->Render(currentEffect);
+			}
+#endif
+			/// Edge detect
+#if ENABLE_EDGE_DETECT
+			if (in_enableEdge && currentEffect->GetName() == "post_edge") {
+
+				currentEffect->SetFloat("clarityFactor", in_edgeClarity);
+				m_stn->m_screenMesh->Render(currentEffect);
+			}
+#endif
 		}
 
 		// De-activate blending
@@ -174,7 +220,7 @@ namespace SPRON {
 		glDeleteRenderbuffers(1, &m_stn->m_frameBufferID);
 
 		// Clean up render texture
-		delete m_stn->m_renderTex;
+		delete m_stn->m_screenTex;
 
 		// Destroy singleton (NOTE: Must come last!)
 		delete m_stn;

@@ -47,10 +47,12 @@ namespace SPRON {
 
 		/// IMGUI
 		void ListenIMGUI() {
+			if (!diffuseMap && !specularMap && !normalMap) { return; }		// No properties to modify, return
+
 			ImGui::LabelText("", name.c_str());
-			ImGui::Checkbox("Disable Diffuse Mapping", &disableDiffuseMap);
-			ImGui::Checkbox("Disable Specular Mapping", &disableSpecularMap);
-			ImGui::Checkbox("Disable Normal Mapping", &disableNormalMap);
+			if (diffuseMap) { ImGui::Checkbox("Disable Diffuse Mapping", &disableDiffuseMap); }
+			if (specularMap) { ImGui::Checkbox("Disable Specular Mapping", &disableSpecularMap); }
+			if (normalMap) { ImGui::Checkbox("Disable Normal Mapping", &disableNormalMap); }
 			ImGui::NewLine();
 		}
 

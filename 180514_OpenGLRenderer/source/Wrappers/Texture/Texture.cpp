@@ -61,6 +61,13 @@ namespace SPRON {
 			GL_UNSIGNED_BYTE,	// Type of data in source texture
 			m_texData);			// Memory location of texture data
 
+		// Account for one channel specular images
+		if (m_type == "texture_specular") {
+
+			GLint swizzleMask[] = { GL_RED, GL_RED, GL_RED, GL_ALPHA };		// Map red channel across color channels so shaders interpret grayscale
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		}
+
 		// Set texture attributes
 		switch (a_filterOption) {
 			case FILTERING_LINEAR:

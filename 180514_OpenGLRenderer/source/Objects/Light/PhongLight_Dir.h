@@ -13,6 +13,8 @@ namespace SPRON {
 		virtual ~PhongLight_Dir();
 
 		const glm::vec3& GetCastDir();
+
+		void ListenIMGUI(int a_id) override;
 	protected:
 	private:
 		glm::vec3 m_castDir;

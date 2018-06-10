@@ -65,7 +65,7 @@ namespace SPRON {
 
 		// Load model 'scene' from file path (encompassing data for whole model including root node, meshes and materials)
 		const aiScene* modelScene = modelImporter.ReadFile(a_filePath, 
-			aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);	// Model importer will import model with certain processes like making sure all faces are triangles
+			aiProcess_Triangulate |  aiProcess_GenUVCoords | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);	// Model importer will import model with certain processes like making sure all faces are triangles
 
 		// Error handling
 		try {
@@ -168,15 +168,30 @@ namespace SPRON {
 		for (int i = 0; i < readVertices.size(); i++) {
 			
 			// Assign raw tangent
-			glm::vec4 calcTangent = glm::vec4(a_mesh->mTangents[i].x, a_mesh->mTangents[i].y, a_mesh->mTangents[i].z, 0);
+			if (a_mesh->mTangents) {
+				glm::vec4 calcTangent = glm::vec4(a_mesh->mTangents[i].x, a_mesh->mTangents[i].y, a_mesh->mTangents[i].z, 0);
 
-			readVertices[i].normalTangent = glm::normalize(calcTangent);	// Normalize to average tangents out and 'smooth' them	
+				readVertices[i].normalTangent = glm::normalize(calcTangent);	// Normalize to average tangents out and 'smooth' them	
+			}
+			else {		// Unable to generate tangents, assign default ones
+				readVertices[i].normalTangent = glm::vec4(1, 0, 0, 1);			
+			}
 		}
 		// Account for models with flipped UVs by calculating the 'handedness' to store in the w of each tangent
 		// to ensure that the bitangent always points in the Y direction
 		for (int i = 0; i < readVertices.size(); ++i) {
+
 			glm::vec3 T = readVertices[i].normalTangent;
-			glm::vec3 B = glm::vec3(a_mesh->mBitangents[i].x, a_mesh->mBitangents[i].y, a_mesh->mBitangents[i].z);
+
+			// Assign bitangent 
+			glm::vec3 B;
+			if (a_mesh->mBitangents) {
+				B = glm::vec3(a_mesh->mBitangents[i].x, a_mesh->mBitangents[i].y, a_mesh->mBitangents[i].z);
+			}
+			else {		// Unable to generate bitangents, assign default ones
+				B = glm::vec3(0, 1, 0);
+			}
+
 			glm::vec3 N = readVertices[i].normal;
 
 			glm::vec3 resultN = glm::cross(T, B);

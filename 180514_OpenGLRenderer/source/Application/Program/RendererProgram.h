@@ -30,12 +30,8 @@ namespace SPRON {
 	private:
 		void FixedUpdate(float a_dt);
 
-		glm::mat4 viewMatrix;
-		glm::mat4 projectionMatrix;
-
+		/// Rendering
 		RenderCamera* mainCamera;
-
-		Transform* sphereTransform;
 
 		std::vector<Mesh*> sceneMeshes;
 		std::vector<Model*> sceneModels;
@@ -43,7 +39,7 @@ namespace SPRON {
 		Texture* wallTex;
 		Texture* faceTex;
 		Texture* lightTex;
-		Texture*	crateTex;
+		Texture* crateTex;
 		Texture* crateSpecularTex;
 		Texture* floorTex;
 

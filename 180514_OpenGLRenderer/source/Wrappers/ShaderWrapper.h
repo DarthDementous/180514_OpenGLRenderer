@@ -5,6 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <string>
 
 namespace SPRON {
 	class TextureWrapperBase;
@@ -19,7 +20,7 @@ namespace SPRON {
 namespace SPRON {
 	class ShaderWrapper {
 	public:
-		ShaderWrapper();
+		ShaderWrapper(const std::string& a_name = "");
 		~ShaderWrapper();
 
 		void LoadShader(const char* a_filePath, unsigned int a_shaderType, const char* a_headerStr = nullptr);
@@ -39,12 +40,15 @@ namespace SPRON {
 		void SetSpotLight(const char* a_name, PhongLight_Spot* a_light);
 		void SetPointLight(const char* a_name, PhongLight_Point* a_light);
 
+		std::string GetName() { return m_name; }
+
 		int FindLocation(const char* a_name);
 
 		operator unsigned int() { return m_ID; }	// Allow class to be used in parameters of openGL functions
 	protected:
 	private:
 		unsigned int m_ID;							// OpenGL identifier
+		std::string m_name;
 
 		std::vector<unsigned int>	m_shaderIDs;	// List of attached shader IDs
 	};

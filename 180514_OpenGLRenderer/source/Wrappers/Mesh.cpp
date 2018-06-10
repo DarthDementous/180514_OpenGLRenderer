@@ -82,8 +82,6 @@ namespace SPRON {
 	{
 		assert(a_camera && "ERROR::MESH::NULL_CAMERA");
 
-	//	if (m_material.name != "Helmet") { return; }
-
 		/// Set global rendering data
 		glm::mat4 modelTransform = m_transform->GetGlobalMatrix();
 

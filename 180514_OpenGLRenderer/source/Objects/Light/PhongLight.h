@@ -19,6 +19,8 @@ namespace SPRON {
 		glm::vec4 GetAmbient();
 		glm::vec4 GetDiffuse();
 		glm::vec4 GetSpecular();
+
+		virtual void ListenIMGUI(int a_id);
 	protected:
 		eLightType m_type;
 	private:

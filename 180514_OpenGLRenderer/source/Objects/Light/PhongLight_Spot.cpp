@@ -1,6 +1,7 @@
 #include "Light\PhongLight_Spot.h"
 
 #include <glm/ext.hpp>
+#include <imgui.h>
 
 namespace SPRON {
 
@@ -47,5 +48,16 @@ namespace SPRON {
 	void PhongLight_Spot::SetSpotDir(const glm::vec3 & a_dir)
 	{
 		m_spotDir = a_dir;
+	}
+
+	void PhongLight_Spot::ListenIMGUI(int a_id)
+	{
+		ImGui::LabelText("", "Spot Light %i", a_id);
+
+		PhongLight::ListenIMGUI(a_id);
+
+		// Spot Light Properties
+		ImGui::DragFloat("Inner Cosine", &m_spotInnerCosine, 0.0001f);
+		ImGui::DragFloat("Outer Cosine", &m_spotOuterCosine, 0.0001f);
 	}
 }

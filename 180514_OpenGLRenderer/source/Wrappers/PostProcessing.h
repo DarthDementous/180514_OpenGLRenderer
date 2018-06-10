@@ -27,7 +27,7 @@ namespace SPRON {
 		unsigned int	m_frameBufferID;
 
 		unsigned int	m_renderBufferID;
-		RenderTexture*	m_renderTex;
+		RenderTexture*	m_screenTex;
 
 		VertexFormat*	m_quadFormat;				// Hold onto quad format so memory can be cleaned up
 		Mesh*			m_screenMesh;				// Mesh used for drawing over screen with default frame buffer

@@ -162,7 +162,6 @@
     <ClCompile Include="source\IMGUI\imgui_demo.cpp" />
     <ClCompile Include="source\IMGUI\imgui_draw.cpp" />
     <ClCompile Include="source\IMGUI\imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="source\Wrappers\Gizmos.cpp" />
     <ClCompile Include="source\Wrappers\gl_core_4_4.c" />
     <ClCompile Include="source\Application\InputMonitor.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -225,7 +224,7 @@
     <None Include="BUILD\shaders\post\post_blur.frag" />
     <None Include="BUILD\shaders\post\post_default.frag" />
     <None Include="BUILD\shaders\post\post_edge.frag" />
-    <None Include="BUILD\shaders\post\post_gamma.frag" />
+    <None Include="BUILD\shaders\post\post_hdr_bloom.frag" />
     <None Include="BUILD\shaders\post\post_base.vert" />
     <None Include="BUILD\shaders\post\post_invert.frag" />
     <None Include="BUILD\shaders\post\post_sharpen.frag" />

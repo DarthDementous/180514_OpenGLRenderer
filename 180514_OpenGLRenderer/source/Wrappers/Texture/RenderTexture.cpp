@@ -16,12 +16,12 @@ namespace SPRON {
 		glTexImage2D(
 			GL_TEXTURE_2D,
 			0,							// No mipmapping for render textures
-			GL_RGB,
+			GL_RGBA16F,					// 16 bit precision
 			a_width,
 			a_height,
 			0,
-			GL_RGB,
-			GL_UNSIGNED_BYTE,
+			GL_RGBA,
+			GL_FLOAT,					// Allow for HDR by allowing color values to exceed 0-1 range temporarily
 			NULL);
 
 		// Enable filtering (linear)

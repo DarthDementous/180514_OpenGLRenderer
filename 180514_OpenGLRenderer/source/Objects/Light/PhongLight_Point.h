@@ -19,7 +19,7 @@ namespace SPRON {
 
 		// IMGUI getters and setters
 		void SetIlluminationRadius(float a_range) { m_illuminationRadius = a_range; }
-		void ListenIMGUI();
+		void ListenIMGUI(int a_id) override;
 	protected:
 	private:
 		glm::vec4 m_pos;

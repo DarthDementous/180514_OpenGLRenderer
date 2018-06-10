@@ -1,0 +1,74 @@
+# Blender3D MTL File: 
+# Material Count: 6
+newmtl BAO_360_HER_DGR_AOR_B
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.512500 0.512500 0.512500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Body_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Body_SP.png
+bump B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Body_N.png
+
+newmtl BAO_360_HER_DGR_AOR_L
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.512500 0.512500 0.512500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Limbs_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Limbs_SP.png
+bump B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Limbs_N.png
+
+newmtl BAO_360_HER_DGR_AOR_H
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.525000 0.525000 0.525000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Hair_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Hair_S.png
+
+newmtl BAO_360_HER_DGR_AOR_C
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.525000 0.525000 0.525000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Cape_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Cape_S.png
+bump B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Cape_N.png
+
+
+newmtl BAO_360_HER_DGR_AOR_E
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.525000 0.525000 0.525000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Eyes_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Eyes_SP.png
+bump B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Eyes_N.png
+
+newmtl BAO_360_HER_DGR_AOR_F
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.212500 0.212500 0.212500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Face_D.png
+map_Ks B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Face_SP.png
+bump B-AO_X360_HERO_Dick_Grayson_Robin_Arkham_Origins_Face_N.png
+

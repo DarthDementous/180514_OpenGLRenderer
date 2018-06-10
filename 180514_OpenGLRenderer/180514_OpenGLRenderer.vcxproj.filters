@@ -78,9 +78,6 @@
     <ClCompile Include="source\Utility\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Wrappers\Gizmos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Wrappers\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -164,7 +161,6 @@
     <None Include="BUILD\shaders\old\base_lit_fixed.frag" />
     <None Include="BUILD\shaders\old\base_mix.frag" />
     <None Include="BUILD\shaders\post\post_base.vert" />
-    <None Include="BUILD\shaders\post\post_gamma.frag" />
     <None Include="BUILD\shaders\phong\forward_light.vert" />
     <None Include="BUILD\shaders\phong\forward_header.glsl" />
     <None Include="BUILD\shaders\phong\forward_point.frag" />
@@ -176,5 +172,6 @@
     <None Include="BUILD\shaders\debug\visualise_normals.geom" />
     <None Include="BUILD\shaders\debug\visualise_normals.frag" />
     <None Include="BUILD\shaders\debug\visualise_normals.vert" />
+    <None Include="BUILD\shaders\post\post_hdr_bloom.frag" />
   </ItemGroup>
 </Project>

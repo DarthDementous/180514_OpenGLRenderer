@@ -1,0 +1,128 @@
+newmtl Model001_Material001
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd head_D.png
+bump head_N.png
+map_Ks head_s.png
+
+newmtl Model001_Material002
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body2_d.png
+map_Ks body2_s.png
+bump body2_n.png
+
+newmtl Model001_Material003
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material004
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material005
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material006
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material007
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material008
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd body1_d.png
+map_Ks body1_s.png
+bump body1_n.png
+
+newmtl Model001_Material009
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd bigwing_d.png
+map_Ks bigwing_s.png
+bump bigwing_N.png
+
+newmtl Model001_Material010
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd bigwing_d.png
+map_Ks bigwing_s.png
+bump bigwing_N.png
+
+
+newmtl Model001_Material011
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd bigwing_d.png
+map_Ks bigwing_s.png
+bump bigwing_N.png
+
+newmtl Model001_Material012
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd bigwing_d.png
+map_Ks bigwing_s.png
+bump bigwing_N.png
+
+
+newmtl Model001_Material013
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd smallwing_d.png
+map_Ks smallwing_s.png
+bump smallwing_N.png
+
+newmtl Model001_Material014
+Ns 94.117647
+Ka 0.000000 0.000000 0.000000
+Kd 0.240000 0.240000 0.240000
+Ks 0.500000 0.500000 0.500000
+map_Kd bigwing_d.png
+map_Ks bigwing_s.png
+bump bigwing_N.png
+

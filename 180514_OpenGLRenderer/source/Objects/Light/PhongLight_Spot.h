@@ -19,6 +19,8 @@ namespace SPRON {
 
 		void SetPos(const glm::vec4& a_pos);
 		void SetSpotDir(const glm::vec3& a_dir);
+
+		void ListenIMGUI(int a_id) override;
 	protected:
 	private:
 		glm::vec4 m_pos;

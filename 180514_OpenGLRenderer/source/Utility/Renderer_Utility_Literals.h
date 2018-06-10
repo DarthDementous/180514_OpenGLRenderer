@@ -8,16 +8,19 @@
 #define ENABLE_SPOT_LIGHTS false
 #define ENABLE_DIR_LIGHTS true
 
+#define ROTATE_MODELS true
+
+#define ENABLE_HDR true
 #define ENABLE_POST_PROCESSING true
-#define ENABLE_GAMMA_CORRECT true
+#define ENABLE_GAMMA_CORRECT false
 #define ENABLE_SHARPEN false
-#define ENABLE_BLUR false
+#define ENABLE_BLUR true
 #define ENABLE_EDGE_DETECT false
 
 #define BLEND_POST_PROCESSING true
 #define BLEND_RENDERING true
 
-#define DEFAULT_CLEAR_COLOR 0.2f, 0.2f, 0.25f, 1
+#define DEFAULT_CLEAR_COLOR 0.01f, 0.01f, 0.015f, 1
 #define DEFAULT_GLOBAL_AMBIENT glm::vec4(0.01f, 0.01f, 0.01f, 1)
 #define DRAW_WIREFRAME false
 #define DRAW_GIZMOS true

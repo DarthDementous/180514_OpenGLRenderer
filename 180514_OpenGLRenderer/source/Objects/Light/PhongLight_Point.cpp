@@ -40,13 +40,16 @@ namespace SPRON {
 	/**
 	*	@brief Call from update to be able to modify properties of point light.
 	*/
-	void PhongLight_Point::ListenIMGUI()
+	void PhongLight_Point::ListenIMGUI(int a_id)
 	{
-		ImGui::Begin("Point Light Properties");
-		
-		// Position
-		static glm::vec3 in_pos = m_pos; ImGui::SliderFloat3("Position", &in_pos[0], -20, 20); m_pos = glm::vec4(in_pos, 1);
+		ImGui::LabelText("", "Point Light %i", a_id);
 
-		ImGui::End();
+		PhongLight::ListenIMGUI(a_id);		// Call base imgui property displayer
+		
+		// Point light properties
+		ImGui::DragFloat3("Position", &m_pos[0], 0.25f);
+		ImGui::DragFloat("Illumination Radius", &m_illuminationRadius, 0.5f, 0.f, 200.f);
+		ImGui::DragFloat("Minimum Illumination", &m_minIllumination, 0.001, 0.f, 1.f);
+
 	}
 }
