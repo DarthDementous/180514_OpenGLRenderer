@@ -4,8 +4,8 @@
 #define WRAPPED_OGL_OTHER true
 #define PRESET_FORMAT_DRAW false
 
-#define ENABLE_POINT_LIGHTS false
-#define ENABLE_SPOT_LIGHTS false
+#define ENABLE_POINT_LIGHTS true
+#define ENABLE_SPOT_LIGHTS true
 #define ENABLE_DIR_LIGHTS true
 
 #define ROTATE_MODELS true
@@ -13,9 +13,9 @@
 #define ENABLE_HDR true
 #define ENABLE_POST_PROCESSING true
 #define ENABLE_GAMMA_CORRECT false
-#define ENABLE_SHARPEN false
+#define ENABLE_SHARPEN true
 #define ENABLE_BLUR true
-#define ENABLE_EDGE_DETECT false
+#define ENABLE_EDGE_DETECT true
 
 #define BLEND_POST_PROCESSING true
 #define BLEND_RENDERING true
